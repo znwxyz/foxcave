@@ -105,6 +105,11 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .btn:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.5)}
 .btn::after{content:"";width:6px;height:6px;flex:0 0 auto;
   border-right:1px solid currentColor;border-top:1px solid currentColor;transform:rotate(45deg)}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.btn-row .btn{margin-top:0}
+.btn-tel{border-color:rgba(255,255,255,.5);font-weight:var(--w-emph);letter-spacing:.02em}
+.contact{margin-top:52px;padding-top:30px;border-top:1px solid rgba(255,255,255,.12);
+  font-size:var(--t-body-m);line-height:var(--lh-body-m);color:#A69E90}
 
 /* ── 스크롤 연동 리빌 ──
    스크롤 위치 = 애니메이션 진행률.
@@ -783,7 +788,11 @@ td em{font-style:normal;color:var(--clay);font-weight:500;font-size:var(--t-body
 <section class="brew brew-tail">
   <div class="h1">서울 도심,<br>어느 <span class="k">여우굴</span> 속</div>
   <p class="lede">간판 없는 가게에서 여우가 술을 빚고 있습니다.<br>하양한모금이 어떻게 만들어지는지 궁금하신 분,<br>직접 막걸리를 담가보고 싶으신 분들을 위해<br><span class="b">막걸리 빚기 원데이 클래스</span>를 열고 있습니다.</p>
-  <a class="btn" href="https://naver.me/G281kMFL" target="_blank" rel="noopener">고대 앞 여우굴 바로 가기</a>
+  <div class="contact">구매, 시음, 도소매 납품, 행사, 협찬 등<br class="mb">편하게 문의 바랍니다.</div>
+  <div class="btn-row">
+    <a class="btn" href="https://naver.me/G281kMFL" target="_blank" rel="noopener">고대 앞 여우굴 바로 가기</a>
+    <a class="btn btn-tel" href="tel:0507-1427-1687">0507-1427-1687</a>
+  </div>
 </section>
 
 <div class="foot">
