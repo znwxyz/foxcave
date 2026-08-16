@@ -401,7 +401,11 @@ section.sec-body{padding-top:54px;padding-bottom:112px}
 .num{font-size:96px;line-height:.9;letter-spacing:-.05em;font-weight:var(--w-display)}
 .num small{font-size:24px;letter-spacing:-.02em;margin-left:8px;font-weight:var(--w-emph)}
 .num.dim{color:#C3BAA9}
-.bar{height:7px;margin-top:26px;background:var(--ink)}
+.bar{height:7px;margin-top:26px;background:var(--ink);
+  transform:scaleX(0);transform-origin:left center;
+  transition:transform 1.2s cubic-bezier(.16,1,.3,1)}
+.bar.in{transform:scaleX(1)}
+@media print{.bar{transform:none}}
 .bar.dim{background:#D3CABA;width:33%}
 .numdesc{margin-top:20px;font-size:14px;line-height:var(--lh-body-s);color:var(--ink-2)}
 
@@ -532,7 +536,9 @@ td em{font-style:normal;color:var(--clay);font-weight:500;font-size:var(--t-body
   .bpanel .btop{top:16px}
   .qbox{padding-left:16px}
   .al-r .qbox{padding-right:16px}
-  .carousel .prev,.carousel .next{display:none}
+  .carousel .nav{width:38px;height:38px;font-size:18px}
+  .carousel .prev{left:14px}
+  .carousel .next{right:14px}
   .totop{right:18px;bottom:18px}
   .dock-r{right:16px;top:12px}
   .mb{display:inline}
@@ -578,13 +584,13 @@ td em{font-style:normal;color:var(--clay);font-weight:500;font-size:var(--t-body
   <div class="numrow">
     <div class="numcol a">
       <div class="numlabel">대량 유통 막걸리</div>
-      <div class="num dim">10<small>일</small></div>
+      <div class="num dim"><span class="cnt" data-to="10">10</span><small>일</small></div>
       <div class="bar dim"></div>
       <div class="numdesc">아직 완성되기도 전에 병에 들어갑니다.</div>
     </div>
     <div class="numcol b">
       <div class="numlabel">하양한모금</div>
-      <div class="num">30<small>일</small></div>
+      <div class="num"><span class="cnt" data-to="30">30</span><small>일</small></div>
       <div class="bar"></div>
       <div class="numdesc">3주 발효하고 1주를 추가로 숙성합니다.</div>
     </div>
@@ -685,7 +691,7 @@ td em{font-style:normal;color:var(--clay);font-weight:500;font-size:var(--t-body
       <div class="tdesc">드라이하고 가볍습니다.<br>탄산은 거의 없어서<br>첫 잔에 잘 어울립니다.</div>
     </div>
     <div class="tcard">
-      <div class="twhen">+ 3 MONTHS</div>
+      <div class="twhen">+ 3~5 MONTHS</div>
       <div class="tname">냉장고 안쪽의 한 병</div>
       <div class="tdesc">탄산이 생기고,<br>더 드라이해지면서<br>알코올 향이 올라옵니다.</div>
     </div>
@@ -761,8 +767,8 @@ td em{font-style:normal;color:var(--clay);font-weight:500;font-size:var(--t-body
 
 <section class="brew brew-tail">
   <div class="h1">서울 도심,<br>어느 <span class="k">여우굴</span></div>
-  <p class="lede">간판 없는 가게에서 술을 빚고 있습니다.<br>하양한모금이 어떻게 만들어지는지 궁금하신 분,<br>직접 막걸리를 담가보고 싶으신 분들을 위해<br><span class="b">원데이클래스</span>를 열고 있습니다.</p>
-  <a class="btn" href="https://map.naver.com/p/search/여우굴" target="_blank" rel="noopener">고대 앞 여우굴 바로 가기</a>
+  <p class="lede">간판 없는 가게에서 술을 빚고 있습니다.<br>하양한모금이 어떻게 만들어지는지 궁금하신 분,<br>직접 막걸리를 담가보고 싶으신 분들을 위해<br><span class="b">막걸리 빚기 원데이 클래스</span>를 열고 있습니다.</p>
+  <a class="btn" href="https://naver.me/G281kMFL" target="_blank" rel="noopener">고대 앞 여우굴 바로 가기</a>
 </section>
 
 <div class="foot">
@@ -844,6 +850,53 @@ top_.addEventListener('click', function(){
   window.addEventListener('scroll', spy, {passive:true});
   window.addEventListener('resize', spy);
   spy();
+})();
+
+/* 숫자 카운트업 + 막대 채우기 : 화면에 들어올 때마다 반복 */
+(function(){
+  var row = document.querySelector('.numrow');
+  if (!row || !('IntersectionObserver' in window)) return;
+  var cnts = Array.prototype.slice.call(row.querySelectorAll('.cnt'));
+  var bars = Array.prototype.slice.call(row.querySelectorAll('.bar'));
+  var gen = 0, playing = false;
+
+  function reset(){
+    gen++; playing = false;
+    cnts.forEach(function(el){ el.textContent = '0'; });
+    bars.forEach(function(b){ b.classList.remove('in'); });
+  }
+
+  function run(){
+    if (playing) return;
+    playing = true;
+    var my = ++gen;
+    cnts.forEach(function(el, i){
+      var to = parseInt(el.dataset.to, 10), dur = 1100, delay = i * 220;
+      el.textContent = '0';
+      setTimeout(function(){
+        if (my !== gen) return;
+        var t0 = performance.now();
+        (function step(now){
+          if (my !== gen) return;
+          var p = Math.min(1, (now - t0) / dur);
+          el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
+          if (p < 1) requestAnimationFrame(step); else el.textContent = to;
+        })(performance.now());
+      }, delay);
+    });
+    bars.forEach(function(b, i){
+      setTimeout(function(){ if (my === gen) b.classList.add('in'); }, i * 220 + 120);
+    });
+  }
+
+  new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if (e.intersectionRatio >= .35) run();
+      else if (e.intersectionRatio === 0) reset();
+    });
+  }, {threshold:[0, .35]}).observe(row);
+
+  setTimeout(run, 6000);
 })();
 
 /* 스크롤 리빌 */
