@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>하양한모금 · 여우굴 | 서울 도심 지하 양조장</title>
 <meta name="description" content="호기심 많은 여우가 빚는 술, 가볍게 머금은 하양 한 모금. 서울 동대문구 제기로 여우굴 양조장.">
-<meta property="og:title" content="하양한모금 · 여우굴">
-<meta property="og:description" content="호기심 많은 여우가 빚는 술, 가볍게 머금은 하양 한 모금">
+<meta property="og:title" content="하양한모금 · 여우굴 | 서울 도심 지하 양조장">
+<meta property="og:description" content="호기심 많은 여우가 빚는 술, 가볍게 머금은 하양 한 모금. 서울 동대문구 제기로 여우굴 양조장.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="assets/hero-beach.webp">
 <style>
@@ -276,6 +276,18 @@ section.sec-body{padding-top:54px;padding-bottom:112px}
 }
 .slot b{font-size:var(--t-body-s);font-weight:700;color:#948C7C}
 .slot span{font-size:var(--t-label);letter-spacing:.03em}
+
+
+/* ── 헤더 내비 ── */
+.hero-nav{display:flex;gap:18px;align-items:baseline;margin-left:6px}
+.hero-nav a{
+  font-size:var(--t-body-s);letter-spacing:-.01em;text-decoration:none;
+  color:var(--ink-3);font-weight:var(--w-emph);
+  padding-bottom:3px;border-bottom:1px solid transparent;
+  transition:color .25s ease,border-color .25s ease;
+}
+.hero-nav a:hover{color:var(--ink-2)}
+.hero-nav a.on{color:var(--ink);border-bottom-color:var(--clay)}
 
 /* ── 0 히어로 ── */
 .hero{height:1400px;display:flex;flex-direction:column;background:var(--paper-2)}
@@ -581,8 +593,11 @@ td em{font-style:normal;color:var(--clay);font-weight:500;font-size:var(--t-body
 <!-- 0 히어로 -->
 <div class="hero">
   <div class="hero-top">
-    <div class="hero-mark">여우굴</div>
-    <div class="hero-meta">SEOUL · UNDERGROUND BREWERY</div>
+    <a class="hero-mark" href="./" style="text-decoration:none;color:inherit">여우굴</a>
+    <nav class="hero-nav">
+      <a href="./class/">클래스</a>
+      <a href="./" class="on">하양한모금</a>
+    </nav>
   </div>
   <div class="hero-photo soft soft-2 soft-btm"><img src="assets/hero-beach.webp" alt=""></div>
   <div class="hero-foot">

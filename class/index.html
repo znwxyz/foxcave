@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>막걸리 빚기 원데이 클래스 · 여우굴</title>
+<meta name="description" content="고두밥과 누룩과 물. 세 가지로 시작해 한 통을 들고 돌아갑니다. 고대 앞 여우굴 원데이 클래스.">
+<meta property="og:title" content="막걸리 빚기 원데이 클래스 · 여우굴">
+<meta property="og:description" content="고두밥과 누룩과 물. 세 가지로 시작해 한 통을 들고 돌아갑니다. 고대 앞 여우굴 원데이 클래스.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/c-ingredients.webp">
+<style>
+@page { size: 860px 1240px; margin: 0; }
+
+/* ═══════════════════════════════════════
+   하양한모금 상세페이지와 동일한 토큰
+   서체 Pretendard 단일 / 헤어라인 기조
+   ═══════════════════════════════════════ */
+:root{
+  --paper:#F6F1E9;
+  --paper-2:#EDE4D6;
+  --ink:#1E1A15;
+  --ink-2:#4A443C;
+  --ink-3:#8A8377;
+  --line:#DCD3C4;
+  --clay:#C4703E;
+  --deep:#1C1813;
+  --tbd:#A8367E;                       /* 미정 데이터 표시색 */
+  --pad:clamp(24px, calc(22vw - 61px), 128px);
+
+  --t-display:clamp(40px, calc(7.7vw + 10px), 76px);
+  --t-h1:clamp(28px, calc(4.7vw + 9.7px), 50px);
+  --t-h2:clamp(21px, calc(2.3vw + 12px), 32px);
+  --t-body-l:clamp(15px, calc(.64vw + 12.5px), 18px);
+  --t-body-m:clamp(13.5px, calc(.32vw + 12.3px), 15px);
+  --t-body-s:clamp(12px, calc(.21vw + 11.2px), 13px);
+  --t-label:clamp(10px, calc(.21vw + 9.2px), 11px);
+
+  --lh-display:1.20;
+  --lh-h1:1.32;
+  --lh-h2:1.42;
+  --lh-body-l:1.85;
+  --lh-body-m:1.75;
+  --lh-body-s:1.70;
+  --lh-label:1.50;
+
+  --w-display:100;
+  --w-head:100;
+  --w-emph:500;
+  --w-body:400;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{
+  max-width:860px;width:100%;margin:0 auto;background:var(--paper);color:var(--ink);
+  overflow-x:hidden;
+  font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;
+  font-size:var(--t-body-m);line-height:var(--lh-body-m);letter-spacing:-.005em;
+  word-break:keep-all;-webkit-font-smoothing:antialiased;
+}
+img{display:block;width:100%;height:100%;object-fit:cover}
+
+/* ── 타이포 ── */
+.display{font-size:var(--t-display);line-height:var(--lh-display);letter-spacing:-.03em;font-weight:var(--w-display)}
+.h1{font-size:var(--t-h1);line-height:var(--lh-h1);letter-spacing:-.035em;font-weight:var(--w-head)}
+.h2{font-size:var(--t-h2);line-height:var(--lh-h2);letter-spacing:-.03em;font-weight:var(--w-head)}
+.lede{font-size:var(--t-body-l);line-height:var(--lh-body-l);color:var(--ink-2);font-weight:var(--w-body)}
+.lede + .lede{margin-top:22px}
+.h1 + .lede,.h2 + .lede{margin-top:38px}
+.eyebrow{font-size:var(--t-label);line-height:var(--lh-label);letter-spacing:.24em;
+  color:var(--ink-3);font-weight:600;margin-bottom:28px}
+.k{color:var(--clay);font-style:normal;font-weight:200}
+.b{font-weight:600}
+.note{margin-top:34px;padding-top:24px;border-top:1px solid var(--line);
+  font-size:var(--t-body-m);line-height:var(--lh-body-m);color:var(--ink-3)}
+.emph{margin-top:38px;font-size:var(--t-body-l);line-height:var(--lh-body-l);
+  color:var(--ink);font-weight:var(--w-emph)}
+.mb{display:none}
+
+/* ── 미정 데이터 표시 ── */
+.tbd{
+  color:var(--tbd);background:rgba(168,54,126,.06);
+  border-bottom:1px dashed var(--tbd);
+  padding:0 3px;border-radius:2px;font-weight:var(--w-emph);
+}
+.tbd::after{content:"?";font-size:.68em;vertical-align:super;margin-left:1px;font-weight:400}
+
+/* ── 공통 ── */
+section{padding:0 var(--pad);position:relative}
+section.sec-head{padding-top:118px;padding-bottom:34px}
+section.sec-body{padding-top:54px;padding-bottom:112px}
+.sec-head .eyebrow{margin-bottom:0}
+.shot{overflow:hidden}
+.soft{position:relative;overflow:hidden}
+.soft::before,.soft::after{content:"";position:absolute;left:0;right:0;z-index:1;
+  pointer-events:none;height:var(--fade,16%)}
+.soft::before{top:0}
+.soft::after{bottom:0}
+.soft-btm::before{display:none}
+.soft-1::before{background:linear-gradient(to bottom,#F6F1E9 0%,rgba(246,241,233,.72) 42%,rgba(246,241,233,0) 100%)}
+.soft-1::after{background:linear-gradient(to top,#F6F1E9 0%,rgba(246,241,233,.72) 42%,rgba(246,241,233,0) 100%)}
+.soft-2::before{background:linear-gradient(to bottom,#EDE4D6 0%,rgba(237,228,214,.72) 42%,rgba(237,228,214,0) 100%)}
+.soft-2::after{background:linear-gradient(to top,#EDE4D6 0%,rgba(237,228,214,.72) 42%,rgba(237,228,214,0) 100%)}
+
+/* ── 섹션 도크 (좌: 상시 / 우: 햄버거) ── */
+.dock{position:fixed;top:50%;transform:translateY(-50%);z-index:55;
+  font-size:11px;letter-spacing:.05em;font-weight:var(--w-body)}
+.dock ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.dock a{display:flex;align-items:center;gap:10px;text-decoration:none;
+  color:rgba(30,26,21,.32);transition:color .3s ease;white-space:nowrap}
+.dock a .ln{width:12px;height:1px;background:currentColor;transition:width .3s ease;flex:0 0 auto}
+.dock a:hover{color:rgba(30,26,21,.62)}
+.dock a.on{color:var(--clay)}
+.dock a.on .ln{width:26px}
+.dock.on-dark a{color:rgba(255,255,255,.34)}
+.dock.on-dark a:hover{color:rgba(255,255,255,.7)}
+.dock.on-dark a.on{color:#D08A5C}
+.dock-l{left:24px}
+.dock-r{right:24px;top:24px;transform:none;
+  align-items:flex-end;display:flex;flex-direction:column-reverse;gap:14px}
+.dock-r ol{align-items:flex-end;opacity:0;pointer-events:none;transform:translateY(-8px);
+  transition:opacity .3s ease,transform .35s cubic-bezier(.16,1,.3,1);
+  background:rgba(246,241,233,.74);backdrop-filter:blur(16px) saturate(1.2);
+  padding:18px 20px;border-radius:16px;border:1px solid rgba(30,26,21,.06)}
+.dock-r.on-dark ol{background:rgba(28,24,19,.62);border-color:rgba(255,255,255,.07)}
+.dock-r.open ol{opacity:1;pointer-events:auto;transform:none}
+.dock-r a{flex-direction:row-reverse}
+.dock-toggle{width:46px;height:46px;border:1px solid rgba(30,26,21,.07);border-radius:50%;
+  cursor:pointer;padding:0;background:rgba(246,241,233,.62);
+  backdrop-filter:blur(16px) saturate(1.2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  transition:background .2s ease}
+.dock-toggle:hover{background:rgba(246,241,233,.9)}
+.dock-toggle i{display:block;width:15px;height:1px;background:var(--ink);
+  transition:transform .3s ease,opacity .2s ease}
+.dock-r.on-dark .dock-toggle{background:rgba(28,24,19,.55);border-color:rgba(255,255,255,.08)}
+.dock-r.on-dark .dock-toggle:hover{background:rgba(28,24,19,.85)}
+.dock-r.on-dark .dock-toggle i{background:#fff}
+.dock-r.open .dock-toggle i:first-child{transform:translateY(3px) rotate(45deg)}
+.dock-r.open .dock-toggle i:last-child{transform:translateY(-3px) rotate(-45deg)}
+@media print{.dock{display:none}}
+
+/* ── 맨 위로 ── */
+.totop{position:fixed;right:30px;bottom:30px;z-index:60;
+  width:46px;height:46px;padding:0;border:0;border-radius:50%;cursor:pointer;
+  background:rgba(30,26,21,.50);backdrop-filter:blur(8px);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .35s ease,background .2s ease}
+.totop.on{opacity:1;pointer-events:auto}
+.totop:hover{background:rgba(30,26,21,.82)}
+.totop::before{content:"";width:10px;height:10px;margin-top:3px;
+  border-left:1px solid currentColor;border-top:1px solid currentColor;transform:rotate(45deg)}
+@media print{.totop{display:none}}
+
+/* ── 스크롤 연동 리빌 ── */
+.rv{opacity:0;transform:translateY(70px);
+  transition:opacity 1s cubic-bezier(.16,1,.3,1),transform 1s cubic-bezier(.16,1,.3,1)}
+.rv.in{opacity:1;transform:none}
+@supports (animation-timeline: view()){
+  .rv{opacity:1;transform:none;transition:none;
+    animation:rv-in linear both;animation-timeline:view();animation-range:entry 0% cover 22%}
+}
+@keyframes rv-in{from{opacity:0;transform:translateY(70px)}60%{opacity:1}to{opacity:1;transform:none}}
+.rvi{overflow:hidden}
+.rvi > img{opacity:0;transform:scale(1.10) translateY(5%);
+  transition:opacity 1s cubic-bezier(.16,1,.3,1),transform 1.1s cubic-bezier(.16,1,.3,1)}
+.rvi.in > img{opacity:1;transform:none}
+@supports (animation-timeline: view()){
+  .rvi > img{opacity:1;transform:none;transition:none;
+    animation:rvi-in linear both;animation-timeline:view();animation-range:entry 0% cover 26%}
+}
+@keyframes rvi-in{from{opacity:0;transform:scale(1.10) translateY(5%)}55%{opacity:1}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.rv,.rvi > img{opacity:1;transform:none;transition:none;animation:none}}
+@media print{.rv,.rvi > img{opacity:1 !important;transform:none !important;animation:none !important}}
+
+/* ── 색 블록 전환 ── */
+.to-paper{background:linear-gradient(to bottom,#EDE4D6 0%,#EDE4D6 54%,#F6F1E9 100%)}
+.to-cream{background:linear-gradient(to bottom,#F6F1E9 0%,#F6F1E9 52%,#EDE4D6 100%)}
+
+
+/* ── 헤더 내비 ── */
+.hero-nav{display:flex;gap:18px;align-items:baseline;margin-left:6px}
+.hero-nav a{
+  font-size:var(--t-body-s);letter-spacing:-.01em;text-decoration:none;
+  color:var(--ink-3);font-weight:var(--w-emph);
+  padding-bottom:3px;border-bottom:1px solid transparent;
+  transition:color .25s ease,border-color .25s ease;
+}
+.hero-nav a:hover{color:var(--ink-2)}
+.hero-nav a.on{color:var(--ink);border-bottom-color:var(--clay)}
+
+/* ── 히어로 ── */
+.hero{background:var(--paper-2)}
+.hero-top{padding:44px var(--pad) 32px;display:flex;gap:14px;align-items:baseline}
+.hero-mark{font-size:var(--t-body-s);letter-spacing:.28em;font-weight:800}
+.hero-meta{font-size:10px;letter-spacing:.16em;color:var(--ink-3)}
+.hero-photo{height:min(980px,128vw);--fade:9%}
+.hero-photo img{object-position:center 46%}
+.hero-foot{padding:44px var(--pad) 96px}
+.hero-title{margin-bottom:26px}
+.hero-sub{font-size:16px;line-height:var(--lh-body-m);color:var(--ink-2)}
+
+/* ── 사진 ── */
+.pic{overflow:hidden}
+.p-tall{height:min(880px,118vw)}
+.p-wide{height:min(560px,74vw)}
+
+/* ── 03 순서 ── */
+.steps{margin-top:8px}
+.step{display:flex;gap:0;border-top:1px solid var(--line);padding:34px 0}
+.step:last-child{border-bottom:1px solid var(--line)}
+.step-n{flex:0 0 78px;font-size:var(--t-label);letter-spacing:.18em;
+  color:var(--clay);font-weight:700;padding-top:5px}
+.step-b{flex:1}
+.step-t{font-size:var(--t-h2);line-height:var(--lh-h2);letter-spacing:-.03em;
+  font-weight:var(--w-emph);margin-bottom:12px}
+.step-d{font-size:var(--t-body-m);line-height:var(--lh-body-m);color:var(--ink-2)}
+.step-time{margin-top:10px;font-size:var(--t-body-s);color:var(--ink-3)}
+
+/* ── 05 QA ── */
+.qa{border-top:1px solid var(--line)}
+.qa-row{border-bottom:1px solid var(--line);padding:26px 0;display:flex;gap:26px}
+.qa-q{flex:0 0 42%;font-size:var(--t-body-m);font-weight:var(--w-emph)}
+.qa-a{flex:1;font-size:var(--t-body-m);line-height:var(--lh-body-m);color:var(--ink-2)}
+
+/* ── 06 가격 ── */
+.price{background:var(--paper-2)}
+.price.sec-body{padding-bottom:56px}
+.plans{display:flex;gap:1px;background:var(--line);margin-top:12px}
+.plan{flex:1;background:var(--paper-2);padding:36px 30px 40px}
+.plan.hot{background:var(--paper)}
+.plan-tag{font-size:var(--t-label);letter-spacing:.18em;color:var(--ink-3);font-weight:700;margin-bottom:14px}
+.plan.hot .plan-tag{color:var(--clay)}
+.plan-n{font-size:var(--t-h2);line-height:1.3;letter-spacing:-.03em;font-weight:var(--w-emph);margin-bottom:18px}
+.plan-p{font-size:30px;line-height:1.2;letter-spacing:-.04em;font-weight:var(--w-display)}
+.plan-p small{font-size:15px;margin-left:4px;font-weight:var(--w-emph)}
+.plan-per{margin-top:12px;font-size:var(--t-body-s);color:var(--ink-3)}
+.price-note{margin-top:34px;font-size:var(--t-body-m);line-height:var(--lh-body-m);color:var(--ink-3)}
+
+/* ── 07 예약 ── */
+.info{border-top:1px solid var(--line);margin-top:12px}
+.info-row{display:flex;gap:22px;padding:17px 0;border-bottom:1px solid var(--line)}
+.info-k{flex:0 0 92px;color:var(--ink-3);font-size:var(--t-body-m)}
+.info-v{flex:1;font-size:var(--t-body-m);font-weight:var(--w-emph)}
+
+/* ── 버튼 ── */
+.btn{display:inline-flex;align-items:center;gap:11px;margin-top:36px;
+  padding:15px 26px;border:1px solid rgba(30,26,21,.28);border-radius:999px;
+  color:var(--ink);text-decoration:none;font-size:var(--t-body-m);
+  transition:background .25s ease,border-color .25s ease}
+.btn:hover{background:rgba(30,26,21,.05);border-color:rgba(30,26,21,.55)}
+.btn::after{content:"";width:6px;height:6px;flex:0 0 auto;
+  border-right:1px solid currentColor;border-top:1px solid currentColor;transform:rotate(45deg)}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.btn-row .btn{margin-top:0}
+.dark .btn{border-color:rgba(255,255,255,.28);color:#EDE7DC}
+.dark .btn:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.5)}
+
+/* ── 08 사람 · 09 제품 ── */
+.dark{background:var(--deep);color:#EDE7DC}
+.dark .eyebrow{color:#7A7365}
+.dark .lede{color:#A69E90}
+.dark .k{color:#D08A5C}
+.qbox{margin-top:44px;padding-right:24px;border-right:2px solid var(--clay);
+  font-size:var(--t-body-l);line-height:var(--lh-body-l);color:#D08A5C;
+  font-style:italic;text-align:right}
+.qbox cite{display:block;margin-top:18px;font-size:var(--t-body-s);
+  color:#7A7365;font-style:normal;letter-spacing:.02em}
+.melt-dark{height:min(300px,56vw);background:linear-gradient(to bottom,
+  #F6F1E9 0%,#EFE2CD 18%,#D3B18C 38%,#A07A56 58%,#5E4531 76%,#2A211A 90%,#1C1813 100%)}
+
+.foot{padding:52px var(--pad) 66px;background:var(--deep);color:#615A4F;
+  font-size:var(--t-label);letter-spacing:.1em;display:flex;justify-content:space-between}
+
+/* ── 정렬 교차 ── */
+.al-r .eyebrow,.al-r .h1,.al-r .h2,.al-r .lede,.al-r .emph,.al-r .note{text-align:right}
+.al-r .lede{margin-left:auto}
+
+/* ═══════════ 반응형 ═══════════ */
+@media (min-width: 981px){ .dock-r{display:none} }
+@media (max-width: 980px){ .dock-l{display:none} }
+
+@media (max-width: 700px){
+  .mb{display:inline}
+  section.sec-head{padding-top:clamp(56px,13vw,118px);padding-bottom:22px}
+  section.sec-body{padding-top:32px;padding-bottom:clamp(58px,14vw,112px)}
+  .hero-foot{padding-top:28px;padding-bottom:46px}
+  .hero-top{padding-top:26px;padding-bottom:22px}
+  .hero-meta{font-size:8px;letter-spacing:.08em}
+  .step{flex-direction:column;gap:12px;padding:26px 0}
+  .step-n{flex:none;padding-top:0}
+  .qa-row{flex-direction:column;gap:8px}
+  .qa-q{flex:none}
+  .plans{flex-direction:column}
+  .plan{padding:28px var(--pad) 30px}
+  .info-row{gap:14px}
+  .info-k{flex:0 0 76px}
+  .foot{flex-direction:column;gap:10px}
+  .totop{right:18px;bottom:18px}
+  .dock-r{right:16px;top:12px}
+}
+</style>
+</head>
+<body>
+
+<!-- 히어로 -->
+<div class="hero">
+  <div class="hero-top">
+    <a class="hero-mark" href="../" style="text-decoration:none;color:inherit">여우굴</a>
+    <nav class="hero-nav">
+      <a href="./" class="on">클래스</a>
+      <a href="../">하양한모금</a>
+    </nav>
+  </div>
+  <div class="hero-photo soft soft-2 soft-btm"><img src="assets/c-ingredients.webp" alt=""></div>
+  <div class="hero-foot to-paper">
+    <div class="display hero-title">막걸리를<br><span class="k">빚어 가는</span> 두 시간</div>
+    <div class="hero-sub">고두밥과 누룩과 물.<br>세 가지로 시작해 한 통을 들고 돌아갑니다.</div>
+  </div>
+</div>
+
+<!-- 01 -->
+<section class="sec-head">
+  <div class="eyebrow">01 — 무엇을 하나</div>
+</section>
+<div class="pic p-tall soft soft-1"><img src="assets/c-hands-rice.webp" alt=""></div>
+<section class="sec-body">
+  <div class="h1">보는 수업이 아니라<br><span class="k">손으로 하는</span> 수업입니다</div>
+  <p class="lede">고두밥을 직접 만지고, 누룩을 섞고, 통에 담습니다.<br>양조장에서 실제로 쓰는 재료와 도구를 그대로 씁니다.</p>
+  <p class="lede">막걸리가 어떻게 술이 되는지<br>설명으로 듣는 대신 손끝으로 확인하게 됩니다.</p>
+  <div class="emph">소요 시간은 <span class="tbd">약 2시간</span>,
+    한 회에 <span class="tbd">최대 6명</span>까지 함께합니다.</div>
+</section>
+
+<!-- 02 -->
+<section class="sec-head al-r">
+  <div class="eyebrow">02 — 가져가는 것</div>
+</section>
+<div class="pic p-tall soft soft-1"><img src="assets/c-steamer.webp" alt=""></div>
+<section class="sec-body al-r">
+  <div class="h1">수업은 두 시간이지만<br><span class="k">술은 집에서</span> 익습니다</div>
+  <p class="lede">담근 술을 통째로 들고 가십니다.<br><span class="tbd">약 1.5L</span> 정도, 한 손에 들리는 무게입니다.</p>
+  <p class="lede">집에 두고 <span class="tbd">일주일쯤</span> 지나면 발효가 끝납니다.<br>그때 걸러서 드시면 됩니다.<br>기다리는 동안 뚜껑을 열어 냄새를 맡아보세요.<br>매일 다릅니다.</p>
+  <div class="emph">이 클래스가 파는 건 두 시간이 아니라<br><span class="b">집에서 익어가는 며칠</span>입니다.</div>
+</section>
+
+<!-- 03 순서 -->
+<section class="sec-head">
+  <div class="eyebrow">03 — 순서</div>
+</section>
+<div class="pic p-tall soft soft-1"><img src="assets/c-hold-jar.webp" alt=""></div>
+<section class="sec-body">
+  <div class="h1">고두밥에서<br>한 통까지</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-n">STEP 01</div>
+      <div class="step-b">
+        <div class="step-t">재료를 만납니다</div>
+        <div class="step-d">쌀, 누룩, 물. 각각이 무슨 일을 하는지 먼저 봅니다.<br>찜기에서 갓 나온 고두밥의 온도부터 확인합니다.</div>
+        <div class="step-time"><span class="tbd">약 20분</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">STEP 02</div>
+      <div class="step-b">
+        <div class="step-t">손으로 섞습니다</div>
+        <div class="step-d">고두밥을 식히고 누룩을 넣어 손으로 비빕니다.<br>이 단계가 술맛을 가장 크게 좌우합니다.</div>
+        <div class="step-time"><span class="tbd">약 40분</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">STEP 03</div>
+      <div class="step-b">
+        <div class="step-t">통에 담습니다</div>
+        <div class="step-d">물을 붓고 자기 통에 옮겨 담습니다.<br>이름과 날짜를 적어 가져가실 수 있게 해드립니다.</div>
+        <div class="step-time"><span class="tbd">약 30분</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">STEP 04</div>
+      <div class="step-b">
+        <div class="step-t">맛을 봅니다</div>
+        <div class="step-d">완성된 술을 함께 시음합니다.<br>내가 오늘 담근 술이 며칠 뒤 어떤 맛이 될지 미리 만나는 자리입니다.</div>
+        <div class="step-time"><span class="tbd">약 30분</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 -->
+<section class="sec-head al-r">
+  <div class="eyebrow">04 — 이런 분께</div>
+</section>
+<div class="pic p-tall soft soft-1"><img src="assets/c-class.webp" alt=""></div>
+<section class="sec-body al-r">
+  <div class="h1">둘이 오시면<br><span class="k">더 재미있습니다</span></div>
+  <p class="lede">고두밥을 섞는 일은 둘이 하면 반으로 줄고,<br>기다리는 며칠은 둘이 나누면 두 배가 됩니다.</p>
+  <p class="lede">데이트로, 친구와, 부모님과.<br>회사 워크숍이나 단체 문의도 받습니다.</p>
+  <div class="note">고려대 정문에서 걸어서 <span class="tbd">5분</span>입니다.</div>
+</section>
+
+<!-- 05 -->
+<section class="sec-head">
+  <div class="eyebrow">05 — 걱정 마세요</div>
+</section>
+<div class="pic p-tall soft soft-1"><img src="assets/c-mix-glove.webp" alt=""></div>
+<section class="sec-body">
+  <div class="h1">처음이어도<br><span class="k">괜찮습니다</span></div>
+  <div class="qa">
+    <div class="qa-row">
+      <div class="qa-q">막걸리를 만들어 본 적이 없어요</div>
+      <div class="qa-a">대부분 처음 오십니다. 순서대로 알려드리니 따라오시면 됩니다.</div>
+    </div>
+    <div class="qa-row">
+      <div class="qa-q">준비물이 있나요</div>
+      <div class="qa-a"><span class="tbd">없습니다.</span> 앞치마와 장갑, 담아 갈 통까지 모두 준비되어 있습니다.</div>
+    </div>
+    <div class="qa-row">
+      <div class="qa-q">옷은 어떻게 입나요</div>
+      <div class="qa-a"><span class="tbd">편한 복장이면 됩니다.</span> 앞치마를 드리지만 소매가 넓은 옷은 피하시는 게 좋습니다.</div>
+    </div>
+    <div class="qa-row">
+      <div class="qa-q">술을 못 마셔도 되나요</div>
+      <div class="qa-a"><span class="tbd">괜찮습니다.</span> 시음은 선택이고, 담근 술은 그대로 가져가시면 됩니다.</div>
+    </div>
+    <div class="qa-row">
+      <div class="qa-q">손에 뭐가 묻나요</div>
+      <div class="qa-a">장갑을 끼고 진행합니다. 맨손으로 만지고 싶으시면 그렇게 하셔도 됩니다.</div>
+    </div>
+    <div class="qa-row">
+      <div class="qa-q">미성년자도 되나요</div>
+      <div class="qa-a"><span class="tbd">주류 제조 실습이라 만 19세 이상만 참여하실 수 있습니다.</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="to-cream" style="height:150px"></div>
+
+<!-- 06 가격 -->
+<section class="price sec-head">
+  <div class="eyebrow">06 — 가격</div>
+</section>
+<div class="pic p-tall soft soft-2"><img src="assets/c-pour-spoon.webp" alt=""></div>
+<section class="price sec-body">
+  <div class="h1">원데이 클래스<br><span class="k">가격 안내</span></div>
+  <div class="plans">
+    <div class="plan">
+      <div class="plan-tag">1인</div>
+      <div class="plan-n">막걸리 빚기<br>원데이 클래스</div>
+      <div class="plan-p">35,000<small>원</small></div>
+      <div class="plan-per">1인 기준 35,000원</div>
+    </div>
+    <div class="plan hot">
+      <div class="plan-tag">2인 · 추천</div>
+      <div class="plan-n">막걸리 빚기<br>원데이 클래스</div>
+      <div class="plan-p">65,000<small>원</small></div>
+      <div class="plan-per">1인 기준 32,500원</div>
+    </div>
+    <div class="plan">
+      <div class="plan-tag">ENGLISH</div>
+      <div class="plan-n">Makgeolli<br>Class</div>
+      <div class="plan-p">40,000<small>원</small></div>
+      <div class="plan-per">영어로 진행합니다</div>
+    </div>
+  </div>
+  <div class="price-note">단체·기업 워크숍은 인원과 일정에 따라 별도로 안내드립니다.<br>
+    <span class="tbd">최소 4인부터, 최대 10인까지</span> 가능합니다.</div>
+</section>
+
+<div class="to-paper" style="height:150px"></div>
+
+<!-- 07 예약 -->
+<section class="sec-head al-r">
+  <div class="eyebrow">07 — 시간과 예약</div>
+</section>
+<div class="pic p-wide soft soft-1"><img src="assets/c-room.webp" alt=""></div>
+<section class="sec-body al-r">
+  <div class="h1">하루에<br><span class="k">한 팀만</span> 받습니다</div>
+  <p class="lede">공간이 넓지 않고, 손으로 하는 수업이라<br>한 번에 여러 팀을 받지 않습니다.</p>
+  <div class="info">
+    <div class="info-row"><div class="info-k">요일</div><div class="info-v"><span class="tbd">월요일 저녁</span></div></div>
+    <div class="info-row"><div class="info-k">시간</div><div class="info-v"><span class="tbd">19:00 시작</span></div></div>
+    <div class="info-row"><div class="info-k">소요</div><div class="info-v"><span class="tbd">약 2시간</span></div></div>
+    <div class="info-row"><div class="info-k">인원</div><div class="info-v"><span class="tbd">1~6인</span></div></div>
+    <div class="info-row"><div class="info-k">예약</div><div class="info-v"><span class="tbd">네이버 예약 또는 전화</span></div></div>
+    <div class="info-row"><div class="info-k">취소</div><div class="info-v"><span class="tbd">3일 전까지 전액 환불</span></div></div>
+    <div class="info-row"><div class="info-k">장소</div><div class="info-v">서울 동대문구 제기로 9-4 지하 1층</div></div>
+  </div>
+  <div class="btn-row" style="justify-content:flex-end">
+    <a class="btn" href="https://naver.me/G281kMFL" target="_blank" rel="noopener">고대 앞 여우굴 바로 가기</a>
+    <a class="btn" href="tel:0507-1427-1687">0507-1427-1687</a>
+  </div>
+</section>
+
+<div class="melt-dark"></div>
+
+<!-- 08 가르치는 사람 -->
+<section class="dark sec-head">
+  <div class="eyebrow">08 — 가르치는 사람</div>
+</section>
+<div class="pic p-tall"><img src="assets/c-nuruk.webp" alt=""></div>
+<section class="dark sec-body">
+  <div class="h1">술을 빚는 사람이<br><span class="k">직접</span> 가르칩니다</div>
+  <p class="lede">여우굴은 서울 도심 지하의 작은 양조장입니다.<br>여기서 하양한모금을 빚고, 같은 자리에서 가르칩니다.</p>
+  <p class="lede">대표는 심리학을 전공했고,<br>진로 멘토링과 구술생애사 작업도 함께하고 있습니다.<br>가르치는 일을 오래 해온 사람입니다.</p>
+  <div class="qbox">“제가 되게 좋아하는 영역이에요.<br>조수가 되지 못한 과거의 꿈을<br>강의를 하면서 충족해주는 느낌.”
+    <cite>— 여우굴 대표</cite>
+  </div>
+</section>
+
+<!-- 09 제품 연결 -->
+<section class="dark sec-head al-r">
+  <div class="eyebrow">09 — 기다리는 동안</div>
+</section>
+<div class="pic p-tall"><img src="assets/c-bottle-cup.webp" alt=""></div>
+<section class="dark sec-body al-r">
+  <div class="h1">오늘 담근 술은<br><span class="k">며칠 뒤에</span> 열립니다</div>
+  <p class="lede">그동안 마실 술은 여기 있습니다.<br>여우굴이 한 달을 채워 빚는 막걸리, 하양한모금.</p>
+  <div class="btn-row" style="justify-content:flex-end">
+    <a class="btn" href="https://znwxyz.github.io/foxcave/" target="_blank" rel="noopener">하양한모금 보러 가기</a>
+  </div>
+</section>
+
+<div class="foot">
+  <span>여우굴 · 막걸리 빚기 원데이 클래스</span>
+  <span>서울 동대문구 제기로 9-4 지하 1층</span>
+</div>
+
+<nav class="dock dock-l" aria-label="섹션 목록"><ol></ol></nav>
+<nav class="dock dock-r" aria-label="섹션 목록">
+  <ol></ol>
+  <button class="dock-toggle" aria-label="섹션 목록 열기"><i></i><i></i></button>
+</nav>
+<button class="totop" aria-label="맨 위로"></button>
+
+<script>
+/* 섹션 도크 */
+(function(){
+  var ebs = Array.prototype.slice.call(document.querySelectorAll('.eyebrow'));
+  var items = ebs.map(function(eb, i){
+    var host = eb.closest('section') || eb.parentNode;
+    if (!host.id) host.id = 'sec-' + i;
+    var parts = eb.textContent.split('—');
+    return {id: host.id, num: parts[0].trim(), label: (parts[1] || '').trim(), el: host};
+  });
+  var docks = Array.prototype.slice.call(document.querySelectorAll('.dock'));
+  docks.forEach(function(d){
+    var ol = d.querySelector('ol');
+    ol.innerHTML = items.map(function(it){
+      return '<li><a href="#' + it.id + '" data-id="' + it.id + '">'
+           + '<span class="ln"></span><span>' + it.num + ' ' + it.label + '</span></a></li>';
+    }).join('');
+    ol.addEventListener('click', function(e){
+      var a = e.target.closest('a'); if (!a) return;
+      e.preventDefault();
+      document.getElementById(a.dataset.id).scrollIntoView({behavior:'smooth', block:'start'});
+      d.classList.remove('open');
+    });
+  });
+  document.querySelector('.dock-toggle').addEventListener('click', function(){
+    document.querySelector('.dock-r').classList.toggle('open');
+  });
+  var darkEls = Array.prototype.slice.call(document.querySelectorAll('.dark, .melt-dark, .foot'));
+  function spy(){
+    var y = window.scrollY + window.innerHeight * 0.42;
+    var cur = items[0];
+    items.forEach(function(it){ if (it.el.offsetTop <= y) cur = it; });
+    docks.forEach(function(d){
+      d.querySelectorAll('a').forEach(function(a){ a.classList.toggle('on', a.dataset.id === cur.id); });
+    });
+    var onDark = darkEls.some(function(el){
+      var t = el.offsetTop, b = t + el.offsetHeight; return y > t && y < b;
+    });
+    docks.forEach(function(d){ d.classList.toggle('on-dark', onDark); });
+  }
+  window.addEventListener('scroll', spy, {passive:true});
+  window.addEventListener('resize', spy); spy();
+})();
+
+/* 맨 위로 */
+var top_ = document.querySelector('.totop');
+window.addEventListener('scroll', function(){
+  top_.classList.toggle('on', window.scrollY > 700);
+}, {passive:true});
+top_.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+/* 스크롤 리빌 */
+(function(){
+  var sel = '.hero-foot > *, section > .eyebrow, section > .h1, section > .lede,'
+          + ' section > .emph, section > .note, section > .qbox, section > .steps,'
+          + ' section > .qa, section > .plans, section > .price-note, section > .info,'
+          + ' section > .btn-row';
+  var selImg = '.pic, .hero-photo';
+  var els = Array.prototype.slice.call(document.querySelectorAll(sel));
+  var imgs = Array.prototype.slice.call(document.querySelectorAll(selImg));
+  if (!('IntersectionObserver' in window)) return;
+  imgs.forEach(function(el){ el.classList.add('rvi'); });
+  els.forEach(function(el){
+    el.classList.add('rv');
+    var sibs = Array.prototype.slice.call(el.parentNode.children).filter(function(x){
+      return x.classList.contains('rv');
+    });
+    var i = sibs.indexOf(el);
+    if (i > 0) {
+      el.style.transitionDelay = Math.min(i, 4) * 90 + 'ms';
+      el.style.animationRange = 'entry ' + (Math.min(i,4) * 5) + '% cover '
+                              + (22 + Math.min(i,4) * 4) + '%';
+    }
+  });
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, {rootMargin:'0px 0px -12% 0px', threshold:0.08});
+  els.concat(imgs).forEach(function(el){ io.observe(el); });
+  setTimeout(function(){ els.concat(imgs).forEach(function(el){ el.classList.add('in'); }); }, 6000);
+})();
+</script>
+</body>
+</html>
