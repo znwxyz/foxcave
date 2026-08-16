@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>하양한모금 · 여우굴 | 서울 도심 지하 양조장</title>
+<meta name="description" content="열흘이 아니라 한 달. 압착하지 않고 빚는 막걸리, 하양한모금. 서울 동대문구 제기로 여우굴 양조장.">
+<meta property="og:title" content="하양한모금 · 여우굴">
+<meta property="og:description" content="가볍고 맑은 맛, 첫 술로 드시기 좋은 하양 한 모금입니다.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/hero-beach.webp">
+<style>
+@page { size: 860px 1240px; margin: 0; }
+
+/* ═══════════════════════════════════════
+   타이포 시스템
+   서체 : Pretendard 단일 패밀리
+          (fallback: Apple SD Gothic Neo)
+   원칙 : 글자가 커질수록 행간 배수를 줄인다
+          작을수록 늘린다
+   단서 : 한글은 글자가 em box를 거의 꽉 채우고
+          받침이 아래로 더 내려온다.
+          라틴 기준 값(1.0~1.1)을 그대로 쓰면 붙는다.
+          디스플레이 하한을 1.20으로 둔다.
+   ═══════════════════════════════════════ */
+:root{
+  /* 색 */
+  --paper:#F6F1E9;
+  --paper-2:#EDE4D6;
+  --ink:#1E1A15;
+  --ink-2:#4A443C;
+  --ink-3:#8A8377;
+  --line:#DCD3C4;
+  --clay:#C4703E;
+  --deep:#1C1813;
+  --pad:clamp(24px, calc(22vw - 61px), 128px);
+
+  /* 크기 — 6단계로 고정 */
+  --t-display:clamp(40px, calc(7.7vw + 10px), 76px);
+  --t-h1:clamp(28px, calc(4.7vw + 9.7px), 50px);
+  --t-h2:clamp(21px, calc(2.3vw + 12px), 32px);
+  --t-body-l:clamp(15px, calc(.64vw + 12.5px), 18px);
+  --t-body-m:clamp(13.5px, calc(.32vw + 12.3px), 15px);
+  --t-body-s:clamp(12px, calc(.21vw + 11.2px), 13px);
+  --t-label:clamp(10px, calc(.21vw + 9.2px), 11px);
+
+  /* 행간 — 크기별 1:1 대응 */
+  --lh-display:1.20;
+  --lh-h1:1.32;
+  --lh-h2:1.42;
+  --lh-body-l:1.85;
+  --lh-body-m:1.75;
+  --lh-body-s:1.70;
+  --lh-label:1.50;
+
+  /* 굵기 — 전반적으로 가볍게. 큰 글자일수록 얇게 */
+  --w-display:100;
+  --w-head:100;
+  --w-emph:500;
+  --w-body:400;
+
+  /* 자간 — 한글은 클수록 조인다 */
+  --ls-display:-.06em;
+  --ls-h1:-.05em;
+  --ls-h2:-.04em;
+  --ls-body:-.005em;
+  --ls-label:.22em;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{
+  max-width:860px;width:100%;margin:0 auto;background:var(--paper);color:var(--ink);
+  overflow-x:hidden;
+  font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;
+  font-size:var(--t-body-m);line-height:var(--lh-body-m);
+  letter-spacing:var(--ls-body);
+  word-break:keep-all;-webkit-font-smoothing:antialiased;
+}
+img{display:block;width:100%;height:100%;object-fit:cover}
+
+/* ── 타이포 클래스 ── */
+.display{font-size:var(--t-display);line-height:var(--lh-display);letter-spacing:-.03em;font-weight:var(--w-display)}
+.h1{font-size:var(--t-h1);line-height:var(--lh-h1);letter-spacing:-.035em;font-weight:var(--w-head)}
+.h2{font-size:var(--t-h2);line-height:var(--lh-h2);letter-spacing:-.03em;font-weight:var(--w-head)}
+.lede{font-size:var(--t-body-l);line-height:var(--lh-body-l);color:var(--ink-2);font-weight:400}
+.lede + .lede{margin-top:22px}
+.body{font-size:var(--t-body-m);line-height:var(--lh-body-m);color:var(--ink-2)}
+.small{font-size:var(--t-body-s);line-height:var(--lh-body-s);color:var(--ink-3)}
+.eyebrow{
+  font-size:var(--t-label);line-height:var(--lh-label);letter-spacing:var(--ls-label);
+  color:var(--ink-3);font-weight:600;margin-bottom:28px;
+}
+
+/* 모바일에서만 먹는 줄바꿈 */
+.mb{display:none}
+
+/* 본문 강조 */
+.b{font-weight:600}
+
+/* 버튼 */
+.btn{display:inline-flex;align-items:center;gap:11px;margin-top:36px;
+  padding:15px 26px;border:1px solid rgba(255,255,255,.26);border-radius:999px;
+  color:#EDE7DC;text-decoration:none;font-size:var(--t-body-m);
+  letter-spacing:-.01em;transition:background .25s ease,border-color .25s ease}
+.btn:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.5)}
+.btn::after{content:"";width:6px;height:6px;flex:0 0 auto;
+  border-right:1px solid currentColor;border-top:1px solid currentColor;transform:rotate(45deg)}
+
+/* ── 스크롤 연동 리빌 ──
+   스크롤 위치 = 애니메이션 진행률.
+   미지원 브라우저는 아래 트랜지션 폴백으로 동작 */
+.rv{opacity:0;transform:translateY(70px);
+  transition:opacity 1s cubic-bezier(.16,1,.3,1),transform 1s cubic-bezier(.16,1,.3,1)}
+.rv.in{opacity:1;transform:none}
+
+@supports (animation-timeline: view()) {
+  .rv{
+    opacity:1;transform:none;transition:none;
+    animation:rv-in linear both;
+    animation-timeline:view();
+    animation-range:entry 0% cover 22%;
+  }
+}
+@keyframes rv-in{
+  from{opacity:0;transform:translateY(70px)}
+  60%{opacity:1}
+  to{opacity:1;transform:none}
+}
+
+/* 사진 : 틀은 고정, 안쪽 이미지만 움직임 → 레이아웃 빈틈 없음 */
+.rvi{overflow:hidden}
+.rvi > img{opacity:0;transform:scale(1.10) translateY(5%);
+  transition:opacity 1s cubic-bezier(.16,1,.3,1),transform 1.1s cubic-bezier(.16,1,.3,1)}
+.rvi.in > img{opacity:1;transform:none}
+
+@supports (animation-timeline: view()) {
+  .rvi > img{
+    opacity:1;transform:none;transition:none;
+    animation:rvi-in linear both;
+    animation-timeline:view();
+    animation-range:entry 0% cover 26%;
+  }
+}
+@keyframes rvi-in{
+  from{opacity:0;transform:scale(1.10) translateY(5%)}
+  55%{opacity:1}
+  to{opacity:1;transform:none}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .rv,.rvi > img{opacity:1;transform:none;transition:none;animation:none}
+}
+@media print{
+  .rv,.rvi > img{opacity:1 !important;transform:none !important;animation:none !important}
+}
+
+/* ── 섹션 도크 (좌: 상시 / 우: 햄버거) ── */
+.dock{position:fixed;top:50%;transform:translateY(-50%);z-index:55;
+  font-size:11px;letter-spacing:.05em;font-weight:var(--w-body)}
+.dock ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.dock a{display:flex;align-items:center;gap:10px;text-decoration:none;
+  color:rgba(30,26,21,.32);transition:color .3s ease;white-space:nowrap}
+.dock a .ln{width:12px;height:1px;background:currentColor;transition:width .3s ease;flex:0 0 auto}
+.dock a:hover{color:rgba(30,26,21,.62)}
+.dock a.on{color:var(--clay)}
+.dock a.on .ln{width:26px}
+.dock.on-dark a{color:rgba(255,255,255,.34)}
+.dock.on-dark a:hover{color:rgba(255,255,255,.7)}
+.dock.on-dark a.on{color:#D08A5C}
+
+.dock-l{left:24px}
+
+.dock-r{right:24px;top:24px;transform:none;
+  align-items:flex-end;display:flex;flex-direction:column-reverse;gap:14px}
+.dock-r ol{align-items:flex-end;
+  opacity:0;pointer-events:none;transform:translateY(-8px);
+  transition:opacity .3s ease,transform .35s cubic-bezier(.16,1,.3,1)}
+.dock-r.open ol{opacity:1;pointer-events:auto;transform:none}
+.dock-r a{flex-direction:row-reverse}
+.dock-toggle{width:46px;height:46px;border:1px solid rgba(30,26,21,.07);border-radius:50%;
+  cursor:pointer;padding:0;
+  background:rgba(246,241,233,.62);backdrop-filter:blur(16px) saturate(1.2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  transition:background .2s ease}
+.dock-toggle:hover{background:rgba(246,241,233,.9)}
+.dock-toggle i{display:block;width:15px;height:1px;background:var(--ink);
+  transition:transform .3s ease,opacity .2s ease}
+.dock-r.on-dark .dock-toggle{background:rgba(28,24,19,.55);border-color:rgba(255,255,255,.08)}
+.dock-r.on-dark .dock-toggle:hover{background:rgba(28,24,19,.85)}
+.dock-r.on-dark .dock-toggle i{background:#fff}
+
+.dock-r ol{background:rgba(246,241,233,.74);backdrop-filter:blur(16px) saturate(1.2);
+  padding:18px 20px;border-radius:16px;border:1px solid rgba(30,26,21,.06)}
+.dock-r.on-dark ol{background:rgba(28,24,19,.62);border-color:rgba(255,255,255,.07)}
+.dock-r.open .dock-toggle i:first-child{transform:translateY(3px) rotate(45deg)}
+.dock-r.open .dock-toggle i:last-child{transform:translateY(-3px) rotate(-45deg)}
+
+@media print{.dock{display:none}}
+
+/* ── 맨 위로 ── */
+.totop{
+  position:fixed;right:30px;bottom:30px;z-index:60;
+  width:46px;height:46px;padding:0;border:0;border-radius:50%;cursor:pointer;
+  background:rgba(30,26,21,.50);backdrop-filter:blur(8px);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity .35s ease,background .2s ease;
+}
+.totop.on{opacity:1;pointer-events:auto}
+.totop:hover{background:rgba(30,26,21,.82)}
+.totop::before{
+  content:"";width:10px;height:10px;margin-top:3px;
+  border-left:1px solid currentColor;border-top:1px solid currentColor;
+  transform:rotate(45deg);
+}
+@media print{.totop{display:none}}
+
+/* ── 위계 공용 : 라벨 → 제목 → 설명 → [강조] → [각주] → 사진 ── */
+.h1 + .lede,.h2 + .lede{margin-top:38px}
+.emph{margin-top:38px;font-size:var(--t-body-l);line-height:var(--lh-body-l);
+  color:var(--ink);font-weight:var(--w-emph)}
+.note{margin-top:34px;padding-top:24px;border-top:1px solid var(--line);
+  font-size:var(--t-body-m);line-height:var(--lh-body-m);color:var(--ink-3)}
+.al-r .emph,.al-r .note{text-align:right}
+.shot{overflow:hidden}
+.press{position:relative;overflow:hidden;background:var(--paper-2);
+  padding-top:126px;padding-bottom:190px}
+.press .bg{position:absolute;inset:0;z-index:0}
+.press .bg::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(to bottom,
+    #EDE4D6 0%, rgba(237,228,214,0) 26%,
+    rgba(237,228,214,0) 68%, #EDE4D6 100%)}
+.press .bg img{width:100%;height:100%;object-fit:cover}
+.press .veil{position:absolute;inset:0;z-index:1;
+  background:linear-gradient(to bottom,rgba(237,228,214,.06) 0%,rgba(237,228,214,.24) 55%,rgba(237,228,214,.46) 100%)}
+.press .inner{position:relative;z-index:2}
+.qbox{margin-top:48px;padding-right:24px;border-right:2px solid var(--clay);
+  font-size:var(--t-body-l);line-height:var(--lh-body-l);color:var(--clay);
+  font-style:italic;text-align:right}
+.qbox cite{display:block;margin-top:18px;font-size:var(--t-body-s);
+  color:var(--ink-3);font-style:normal;letter-spacing:.02em}
+
+
+/* ── 제목 키워드 강조 ── */
+.k{color:var(--clay);font-style:normal;font-weight:200}
+.hang .k,.brew .k,.banner-dark .k{color:#D08A5C}
+
+/* ── 정렬 : 01~08 좌우 교차 ── */
+.al-r .eyebrow,.al-r .h1,.al-r .h2,.al-r .lede{text-align:right}
+.al-r .lede{margin-left:auto}
+.banner.al-r .btext{left:auto;right:var(--pad);text-align:right}
+
+/* ── 공통 ── */
+section{padding:0 var(--pad);position:relative}
+/* 사진이 있는 섹션 : 라벨 → 사진 → 제목 → 설명 */
+section.sec-head{padding-top:118px;padding-bottom:34px}
+section.sec-body{padding-top:54px;padding-bottom:112px}
+.sec-head .eyebrow{margin-bottom:0}
+.rule{height:1px;background:var(--line);margin:0 var(--pad)}
+.slot{
+  border:1px dashed #C6BCA9;background:
+    repeating-linear-gradient(45deg,transparent,transparent 11px,rgba(0,0,0,.016) 11px,rgba(0,0,0,.016) 22px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:#A29A8A;text-align:center;gap:7px;
+}
+.slot b{font-size:var(--t-body-s);font-weight:700;color:#948C7C}
+.slot span{font-size:var(--t-label);letter-spacing:.03em}
+
+/* ── 0 히어로 ── */
+.hero{height:1400px;display:flex;flex-direction:column;background:var(--paper-2)}
+.hero-top{padding:44px var(--pad) 32px;display:flex;gap:14px;
+  align-items:baseline;background:var(--paper-2)}
+.hero-mark{font-size:var(--t-body-s);letter-spacing:.28em;font-weight:800;color:var(--ink)}
+.hero-meta{font-size:10px;letter-spacing:.16em;color:var(--ink-3)}
+.hero-photo{flex:1;--fade:8%}
+.hero-photo img{object-position:center 52%}
+.hero-foot{padding:30px var(--pad) 56px}
+.hero-title{margin-bottom:26px}
+.hero-sub{font-size:16px;line-height:var(--lh-body-m);color:var(--ink-2)}
+
+/* ── 1 맛 ── */
+.taste{background:var(--paper-2)}
+.taste.sec-body{background:linear-gradient(to bottom,#EDE4D6 0%,#EDE4D6 55%,#F6F1E9 100%)}
+.taste-note{
+  margin-top:58px;padding-left:26px;border-left:2px solid var(--ink);
+  font-size:17px;line-height:var(--lh-body-m);font-weight:700;
+}
+
+/* ── 01 맛 : 정물 배너 ── */
+.still{height:820px;background:var(--paper-2);--fade:17%}
+.still img{object-position:center 50%}
+
+/* ── 2 평양냉면 ── */
+.naeng.sec-head{background:#D8BFA4}
+.naeng.sec-body{background:linear-gradient(to bottom,#E0D4C8 0%,#E7DCCE 45%,#EDE4D6 100%)}
+.naeng .lede{max-width:560px}
+
+/* ── 무드 밴드 ── */
+.band{display:flex;background:var(--paper)}
+.band-after-dark{background:var(--deep)}
+.bowl{height:820px;--fade:15%}
+.bowl::before{background:linear-gradient(to bottom,#D8BFA4 0%,rgba(216,191,164,.70) 44%,rgba(216,191,164,0) 100%)}
+.bowl::after{background:linear-gradient(to top,#E0D4C8 0%,rgba(224,212,200,.70) 44%,rgba(224,212,200,0) 100%)}
+.bowl img{object-position:center 58%}
+.bpanel{flex:1;position:relative;height:360px;overflow:hidden}
+.bpanel img{filter:saturate(.92)}
+.bpanel::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(20,16,12,.62) 0%,rgba(20,16,12,.18) 42%,rgba(20,16,12,.10) 100%);
+}
+.bpanel .btop{
+  position:absolute;top:24px;left:0;right:0;z-index:2;text-align:center;
+  font-size:var(--t-label);letter-spacing:.2em;color:rgba(255,255,255,.88);font-weight:600;
+  text-shadow:0 1px 6px rgba(0,0,0,.35);
+}
+.bpanel .bbottom{
+  position:absolute;bottom:26px;left:0;right:0;z-index:2;text-align:center;
+  font-size:30px;line-height:var(--lh-h2);letter-spacing:.14em;color:#fff;font-weight:var(--w-head);
+  text-shadow:0 2px 12px rgba(0,0,0,.4);
+}
+/* ── 제품컷 가장자리 풀기 ──
+   하양한모금이 나오는 사진은 네모로 잘리지 않게
+   위아래를 배경색으로 서서히 흡수시킨다 */
+.soft{position:relative;overflow:hidden}
+.soft::before,.soft::after{
+  content:"";position:absolute;left:0;right:0;z-index:1;pointer-events:none;
+  height:var(--fade,18%);
+}
+.soft::before{top:0}
+.soft::after{bottom:0}
+.soft-btm::before{display:none}
+/* 배경 --paper-2 위 */
+.soft-2::before{background:linear-gradient(to bottom,#EDE4D6 0%,rgba(237,228,214,.72) 42%,rgba(237,228,214,0) 100%)}
+.soft-2::after{background:linear-gradient(to top,#EDE4D6 0%,rgba(237,228,214,.72) 42%,rgba(237,228,214,0) 100%)}
+/* 배경 --paper 위 */
+.soft-1::before{background:linear-gradient(to bottom,#F6F1E9 0%,rgba(246,241,233,.72) 42%,rgba(246,241,233,0) 100%)}
+.soft-1::after{background:linear-gradient(to top,#F6F1E9 0%,rgba(246,241,233,.72) 42%,rgba(246,241,233,0) 100%)}
+
+/* ── 가로 스트립 : 양조장 ── */
+.carousel{position:relative;background:var(--deep)}
+.carousel .nav{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:3;
+  width:44px;height:44px;border:0;border-radius:50%;cursor:pointer;
+  background:rgba(255,255,255,.10);backdrop-filter:blur(6px);
+  color:rgba(255,255,255,.82);font-size:22px;line-height:1;
+  font-family:inherit;font-weight:300;padding:0 0 2px;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .2s ease,color .2s ease;
+}
+.carousel .nav:hover{background:rgba(255,255,255,.20);color:#fff}
+.carousel .prev{left:26px}
+.carousel .next{right:26px}
+.strip{
+  display:flex;gap:10px;background:var(--deep);
+  overflow-x:auto;overflow-y:hidden;
+  padding-left:var(--pad);
+  scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;
+}
+.strip::-webkit-scrollbar{height:0;display:none}
+.strip figure{flex:0 0 auto;height:460px;scroll-snap-align:center;overflow:hidden}
+.strip img{height:100%;width:auto;object-fit:cover;
+  filter:grayscale(.92) contrast(1.06) brightness(.94)}
+.strip .tail{flex:0 0 var(--pad);height:460px}
+
+/* ── 무드 배너 ── */
+.banner{position:relative;height:560px;overflow:hidden}
+.banner .btext{position:absolute;left:var(--pad);bottom:88px;z-index:2}
+.banner .bhead{
+  font-size:var(--t-h1);line-height:var(--lh-h1);letter-spacing:var(--ls-h1);
+  font-weight:var(--w-display);color:var(--ink);
+}
+.banner .bsub{
+  margin-top:20px;font-size:17px;line-height:var(--lh-body-m);color:var(--ink-2);font-weight:500;
+}
+.banner .beyebrow{
+  font-size:var(--t-label);line-height:var(--lh-label);letter-spacing:var(--ls-label);
+  color:var(--ink-2);font-weight:700;margin-bottom:22px;
+}
+.banner-dark{height:620px}
+.banner-dark::after{
+  content:"";position:absolute;inset:0;z-index:1;
+  background:linear-gradient(to top,rgba(14,11,8,.82) 0%,rgba(14,11,8,.34) 46%,rgba(14,11,8,.12) 100%);
+}
+.banner-dark .bhead{color:#F4EFE5}
+.banner-dark .bsub{color:#B8AF9F}
+
+/* ── 3 한 달 ── */
+.month{padding-top:126px;padding-bottom:40px}
+.month .lede{margin-bottom:60px}
+.numrow{display:flex;position:relative}
+.numrow::after{
+  content:"vs.";
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  background:var(--paper);padding:14px 0;
+  font-size:15px;letter-spacing:.03em;color:#BDB4A4;font-weight:var(--w-body);
+}
+.numcol{flex:1}
+.numcol.a{padding-right:40px}
+.numcol.b{border-left:1px solid var(--line);padding-left:40px}
+.numlabel{font-size:12px;line-height:var(--lh-label);letter-spacing:.14em;color:var(--ink-3);font-weight:700;margin-bottom:16px}
+.num{font-size:96px;line-height:.9;letter-spacing:-.05em;font-weight:var(--w-display)}
+.num small{font-size:24px;letter-spacing:-.02em;margin-left:8px;font-weight:var(--w-emph)}
+.num.dim{color:#C3BAA9}
+.bar{height:7px;margin-top:26px;background:var(--ink)}
+.bar.dim{background:#D3CABA;width:33%}
+.numdesc{margin-top:20px;font-size:14px;line-height:var(--lh-body-s);color:var(--ink-2)}
+
+/* ── 4 숙취 ── */
+.hang{background:var(--deep);color:#EDE7DC;padding-top:124px;padding-bottom:124px}
+
+/* 밝은 면 ↔ 어두운 면 전환 띠
+   중간을 회색이 아니라 따뜻한 갈색으로 지나가게 한다 */
+.melt-dark{height:300px;background:linear-gradient(to bottom,
+  #F6F1E9 0%, #EFE2CD 18%, #D3B18C 38%, #A07A56 58%,
+  #5E4531 76%, #2A211A 90%, #1C1813 100%)}
+.melt-light{height:260px;background:linear-gradient(to bottom,
+  #1C1813 0%, #2A211A 14%, #5E4531 34%, #A07A56 58%,
+  #C4A183 80%, #D8BFA4 100%)}
+.hang .eyebrow{color:#7A7365}
+.hang .lede{color:#A69E90}
+.diagram{display:flex;margin-top:66px;border-top:1px solid #332E27}
+.dcol{flex:1;padding-top:38px}
+.dcol.a{padding-right:38px}
+.dcol.b{border-left:1px solid #332E27;padding-left:38px}
+.dtag{font-size:12px;line-height:var(--lh-label);letter-spacing:.14em;font-weight:700;margin-bottom:26px;color:#7A7365}
+.dstep{display:flex;gap:12px;align-items:baseline;margin-bottom:15px;line-height:var(--lh-body-m)}
+.dstep i{font-style:normal;font-size:var(--t-label);color:#615A4F;letter-spacing:.1em;min-width:22px}
+.dresult{margin-top:28px;padding-top:20px;border-top:1px dashed #3A342C;font-size:16px;line-height:var(--lh-body-m);font-weight:var(--w-emph)}
+.dresult.bad{color:#D08A5C}
+
+/* ── 6 두 병 ── */
+.two{background:var(--paper-2)}
+.two .lede{max-width:560px}
+.two-photo{height:820px;--fade:16%}
+.two-cards{display:flex}
+.two-foot{padding-bottom:96px;
+  background:linear-gradient(to bottom,#EDE4D6 0%,#EDE4D6 58%,#F6F1E9 100%)}
+.tcard{flex:1;padding:48px var(--pad) 56px}
+.tcard:first-child{padding-right:48px}
+.tcard + .tcard{padding-left:48px;border-left:1px solid var(--line)}
+.twhen{font-size:var(--t-label);line-height:var(--lh-label);letter-spacing:.18em;font-weight:800;color:var(--clay);margin-bottom:14px}
+.tname{font-size:21px;line-height:var(--lh-h2);letter-spacing:-.03em;font-weight:var(--w-emph);margin-bottom:16px}
+.tdesc{font-size:14px;line-height:var(--lh-body-s);color:var(--ink-2)}
+
+/* ── 7 병 ── */
+
+.bottle-photo{height:560px;margin-bottom:56px;--fade:20%}
+.hold{height:880px;overflow:hidden}
+.hold img{object-position:center 46%}
+.bottle .h1{margin-bottom:36px}
+
+/* ── 8 바게트 ── */
+
+.pair-photo{height:900px;overflow:hidden}
+.pair-photo img{object-position:center 52%}
+
+/* ── 9 스펙 ── */
+.spec{padding-top:112px;padding-bottom:40px}
+.spec .eyebrow{margin-bottom:36px}
+.spec-row{display:flex;align-items:stretch;margin-right:calc(var(--pad) * -1)}
+.spec-table{flex:1 1 auto;min-width:0;padding-right:52px}
+.spec-shot{flex:0 0 380px;background:var(--paper-2);
+  display:flex;align-items:center;justify-content:center;padding:46px 40px}
+.spec-shot img{width:auto;height:auto;max-width:100%;max-height:430px;object-fit:contain}
+.spec th{width:104px}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:18px 0;border-bottom:1px solid var(--line);font-size:var(--t-body-m);line-height:var(--lh-body-m);vertical-align:top}
+th{width:140px;font-weight:600;color:var(--ink-3)}
+td{font-weight:var(--w-emph)}
+td em{font-style:normal;color:var(--clay);font-weight:500;font-size:var(--t-body-s)}
+
+/* ── 10 양조장 ── */
+.brew{background:var(--deep);color:#EDE7DC}
+.brew-head{padding:118px var(--pad) 34px}
+.brew-tail{padding:54px var(--pad) 112px}
+.brew .eyebrow{color:#7A7365}
+.brew .lede{color:#A69E90;max-width:540px}
+
+.foot{padding:52px var(--pad) 66px;background:var(--deep);color:#615A4F;
+  font-size:var(--t-label);letter-spacing:.1em;display:flex;justify-content:space-between}
+
+/* ═══════════ 반응형 ═══════════ */
+@media (min-width: 981px){
+  .dock-r{display:none}
+}
+
+@media (max-width: 980px){
+  .dock-l{display:none}        /* 본문 위를 덮으므로 숨김. 우측 햄버거로 대체 */
+}
+
+@media (max-width: 700px){
+  section.sec-head{padding-top:clamp(56px,13vw,118px);padding-bottom:22px}
+  section.sec-body{padding-top:32px;padding-bottom:clamp(58px,14vw,112px)}
+  .taste.sec-head,.naeng.sec-head,.two.sec-head,.bottle.sec-head,.pair.sec-head{padding-bottom:20px}
+  .hang{padding-top:clamp(60px,15vw,124px);padding-bottom:clamp(60px,15vw,124px)}
+  .month{padding-top:clamp(60px,15vw,126px)}
+  .press{padding-top:clamp(60px,15vw,126px);padding-bottom:clamp(96px,24vw,190px)}
+  .spec{padding-top:clamp(56px,14vw,112px)}
+  .brew-head{padding-top:clamp(60px,15vw,118px)}
+  .brew-tail{padding-top:34px;padding-bottom:clamp(64px,16vw,112px)}
+  .foot{padding:34px var(--pad) 44px;flex-direction:column;gap:10px}
+
+  /* 사진 : 화면 폭 기준 세로 비율 */
+  .hero{height:auto}
+  .hero-photo{height:132vw;flex:none}
+  .still,.bowl,.two-photo{height:115vw}
+  .hold{height:125vw}
+  .pair-photo{height:128vw}
+  .bpanel{height:52vw}
+  .strip figure{height:76vw}
+  .melt-dark{height:56vw}
+  .melt-light{height:50vw}
+
+  /* 2단 → 세로 쌓기 */
+  .numrow{flex-direction:column;gap:36px}
+  .numcol.a{padding-right:0}
+  .numcol.b{border-left:0;border-top:1px solid var(--line);padding-left:0;padding-top:36px}
+  .numrow::after{display:none}
+  .diagram{flex-direction:column;gap:34px;text-align:right}
+  .dstep{justify-content:flex-end}
+  .dcol.a{padding-right:0}
+  .dcol.b{border-left:0;border-top:1px solid #332E27;padding-left:0;padding-top:34px}
+  .two-cards{flex-direction:column}
+  .tcard{padding:34px var(--pad) 34px !important}
+  .tcard + .tcard{border-left:0;border-top:1px solid var(--line)}
+  .spec-row{flex-direction:column;margin-right:0;gap:36px}
+  .spec-table{padding-right:0}
+  .spec-shot{flex:none;width:100%;padding:36px var(--pad)}
+  .spec th{width:88px}
+  .num{font-size:clamp(56px,15vw,96px)}
+  .bpanel .bbottom{font-size:clamp(19px,4.4vw,30px);bottom:18px}
+  .bpanel .btop{top:16px}
+  .qbox{padding-left:16px}
+  .al-r .qbox{padding-right:16px}
+  .carousel .prev,.carousel .next{display:none}
+  .totop{right:18px;bottom:18px}
+  .dock-r{right:16px;top:12px}
+  .mb{display:inline}
+  .hero-mark{letter-spacing:.18em}
+  .hero-meta{font-size:8px;letter-spacing:.08em}
+  .hero-top{padding-top:26px;padding-bottom:22px}
+  .hero-foot{padding-top:26px;padding-bottom:44px}
+}
+</style>
+</head>
+<body>
+
+<!-- 0 히어로 -->
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-mark">여우굴</div>
+    <div class="hero-meta">SEOUL · UNDERGROUND BREWERY</div>
+  </div>
+  <div class="hero-photo soft soft-2 soft-btm"><img src="assets/hero-beach.webp" alt=""></div>
+  <div class="hero-foot">
+    <div class="display hero-title">첫 술은<br><span class="k">하양</span></div>
+    <div class="hero-sub">서울 도심 지하 양조장에서<br>한 달을 채워 빚고 있습니다</div>
+  </div>
+</div>
+
+<!-- 1 맛 -->
+<section class="taste sec-head">
+  <div class="eyebrow">01 — 맛</div>
+</section>
+
+<div class="still soft soft-2"><img src="assets/rice-still.webp" alt=""></div>
+
+<section class="taste sec-body">
+  <div class="h1">하얗고 투명할 만큼<br><span class="k">섬세한</span> 한 모금</div>
+  <p class="lede">탁하지 않고 맑아서 목 넘김이 가볍습니다.<br>달지 않고 드라이한 편이라 뒤가 깔끔하고요.<br>가볍고 맑은 맛, <span class="b">첫 술로 드시기 좋은 하양 한 모금</span>입니다.</p>
+</section>
+
+<!-- 2 공정 -->
+<section class="month al-r">
+  <div class="eyebrow">02 — 제조 공정</div>
+  <div class="h1">열흘이 아니라<br><span class="k">한 달의 정성</span></div>
+  <p class="lede">오늘 술을 안치면 병에 들어가는 건 한 달 뒤입니다.<br><span class="b">발효를 마치고도 일주일을 더</span> 두는 건,<br>맛이 숙성되는 데 그만큼의 시간이 필요해서입니다.</p>
+  <div class="numrow">
+    <div class="numcol a">
+      <div class="numlabel">대량 유통 막걸리</div>
+      <div class="num dim">10<small>일</small></div>
+      <div class="bar dim"></div>
+      <div class="numdesc">아직 완성되기도 전에 병에 들어갑니다.</div>
+    </div>
+    <div class="numcol b">
+      <div class="numlabel">하양한모금</div>
+      <div class="num">30<small>일</small></div>
+      <div class="bar"></div>
+      <div class="numdesc">3주 발효하고 1주를 추가로 숙성합니다.</div>
+    </div>
+  </div>
+</section>
+
+<div class="melt-dark"></div>
+
+<!-- 3 숙취 -->
+<section class="hang">
+  <div class="eyebrow">03 — 발효 방식</div>
+  <div class="h1">“막걸리는 숙취가 심하다”는<br><span class="k">하양</span>에 통하지 않습니다</div>
+  <p class="lede">탁한 술일수록 숙취가 있고, <br class="mb">덜 익은 술일수록 더 그렇습니다.<br>술이 완성되는 동안 <span class="b">날아가야 할 것들</span>이 있거든요.</p>
+  <div class="diagram">
+    <div class="dcol a">
+      <div class="dtag">열흘 만에 병입할 때</div>
+      <div class="dstep"><i>01</i><span>술이 아직 완성되지 않음</span></div>
+      <div class="dstep"><i>02</i><span>병을 닫음</span></div>
+      <div class="dstep"><i>03</i><span>병 안에서 발효가 이어지며 탄산 생성</span></div>
+      <div class="dresult bad">날아가야 할 것들이<br>그대로 갇혀버립니다</div>
+    </div>
+    <div class="dcol b">
+      <div class="dtag">한 달을 채울 때</div>
+      <div class="dstep"><i>01</i><span>3주 발효</span></div>
+      <div class="dstep"><i>02</i><span>1주 숙성 — 이 구간에서 휘발</span></div>
+      <div class="dstep"><i>03</i><span>완성된 뒤 병입</span></div>
+      <div class="dresult">날아갈 것이 날아간 뒤에 병에 들어가니,<br>두통이나 숙취가 없습니다</div>
+    </div>
+  </div>
+</section>
+
+<!-- 무드 밴드 : 공정 -->
+<div class="band band-after-dark">
+  <div class="bpanel">
+    <img src="assets/nuruk-culture.webp" alt="">
+    <div class="btop">NURUK</div>
+    <div class="bbottom">누룩</div>
+  </div>
+  <div class="bpanel">
+    <img src="assets/ferment-trays.webp" alt="">
+    <div class="btop">3 WEEKS</div>
+    <div class="bbottom">발효</div>
+  </div>
+  <div class="bpanel">
+    <img src="assets/droplets.webp" alt="">
+    <div class="btop">1 WEEK</div>
+    <div class="bbottom">숙성</div>
+  </div>
+</div>
+
+<div class="melt-light"></div>
+
+<!-- 4 자리 -->
+<section class="naeng al-r sec-head">
+  <div class="eyebrow">04 — 첫인상</div>
+</section>
+
+<div class="bowl soft"><img src="assets/bowl.webp" alt=""></div>
+
+<section class="naeng al-r sec-body">
+  <div class="h1">막걸리계의<br><span class="k">평양냉면</span></div>
+  <p class="lede">하양한모금을 처음 드신다면 <br class="mb">조금 어렵거나 밍밍하게 느껴질 수 있어요.<br>그런데 평양냉면이 그렇듯, <br class="mb">한 번 각인된 맛은 문득 떠오릅니다.<br><span class="b">이상하게 자꾸 생각나는 맛</span>이거든요.</p>
+  <div class="note">하양한모금을 취급하는 술집들이 <br class="mb">하양한모금을 소개하며 붙인 별칭입니다.</div>
+</section>
+
+<!-- 5 압착 -->
+<section class="press">
+  <div class="bg"><img src="assets/texture-flour.webp" alt=""></div>
+  <div class="veil"></div>
+  <div class="inner">
+  <div class="eyebrow">05 — 생산 원칙</div>
+  <div class="h1"><span class="k">짜내지</span><br>않습니다</div>
+  <p class="lede">술은 눌러 짜낼수록 많이 나옵니다.<br>대신 마지막까지 짜면 <br class="mb">원하지 않는 맛도 함께 따라 나옵니다.<br>예로부터 술독에 용수를 박아 <br class="mb">맑은 부분만 떠낸 것도 같은 이유입니다.</p>
+  <p class="lede">하양한모금은 <span class="b">마지막 압착 공정을 생략</span>합니다.<br>같은 원료로 남들보다 적게 만들고, 그만큼 덜 남깁니다.</p>
+  <div class="qbox">“공법 마지막에 압착을 안 하기 때문에<br>남들보다 생산량이 적거든요.<br>그래서 오히려 돈을 적게 남기는 거예요.”
+    <cite>— 여우굴 대표</cite>
+  </div>
+  </div>
+</section>
+
+<!-- 6 두 병 -->
+<section class="two al-r sec-head">
+  <div class="eyebrow">06 — 두 병 추천</div>
+</section>
+
+<div class="two-photo soft soft-2"><img src="assets/two-bottles.webp" alt=""></div>
+
+<section class="two al-r sec-body" style="padding-bottom:54px">
+  <div class="h1"><span class="k">두 병</span>을<br>사시길 권합니다</div>
+  <p class="lede">냉장고에 두면 발효가 아주 천천히 계속됩니다.<br>한 병은 바로, 한 병은 두어 달 뒤에 드셔보세요.<br><span class="b">같은 술인데 다른 술처럼</span> 느껴질 거예요.</p>
+</section>
+
+<div class="two-foot">
+  <div class="two-cards">
+    <div class="tcard">
+      <div class="twhen">TODAY</div>
+      <div class="tname">오늘의 한 병</div>
+      <div class="tdesc">드라이하고 가볍습니다.<br>탄산은 거의 없어서<br>첫 잔에 잘 어울립니다.</div>
+    </div>
+    <div class="tcard">
+      <div class="twhen">+ 3 MONTHS</div>
+      <div class="tname">냉장고 안쪽의 한 병</div>
+      <div class="tdesc">탄산이 생기고,<br>더 드라이해지면서<br>알코올 향이 올라옵니다.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 7 병 -->
+<section class="bottle sec-head">
+  <div class="eyebrow">07 — 병의 비밀</div>
+</section>
+
+<div class="hold shot soft soft-1" style="--fade:9%"><img src="assets/hand-beach.webp" alt=""></div>
+
+<section class="bottle sec-body">
+  <div class="h1">눕혀도 <span class="k">절대</span><br>새지 않는 이유</div>
+  <p class="lede">탄산이 있는 막걸리는 대개 ‘숨 쉬는 뚜껑’을 씁니다.<br>그렇게 하지 않으면 병이 터져버리니까요.<br>대신 눕히면 줄줄 새고 흐르는 문제가 생기죠.</p>
+  <p class="lede">하양한모금은 <span class="b">내압병</span>에 <span class="b">내압뚜껑</span>을 사용합니다.<br>5개월 동안 병 안에서 생기는 탄산을 <br class="mb">견디도록 만들어두었습니다.</p>
+</section>
+
+<!-- 8 바게트 -->
+<section class="pair al-r sec-head">
+  <div class="eyebrow">08 — 페어링 안주</div>
+</section>
+
+<div class="pair-photo shot soft soft-1" style="--fade:10%"><img src="assets/baguette.webp" alt=""></div>
+
+<section class="pair al-r sec-body">
+  <div class="h1"><span class="k">바게트</span>와<br>페어링이 되는 막걸리</div>
+  <p class="lede">막걸리의 단짝, 전이나 튀김도 좋지만<br>하양한모금은 <span class="b">조금 다른 곁들임을 추천</span>합니다.</p>
+  <p class="lede">마켓이나 시음회에서 늘 내어드리는 안주는 바게트입니다.<br>한 번씩 갸웃하시다가도 <br class="mb">한 모금 맛보고 나면 고개를 끄덕이게 되죠.</p>
+  <div class="emph">안 어울릴 것 같은 둘이 만났을 때 오는 깜짝스러운 즐거움.<br>그 낙차가 이 술을 오래 기억하게 만듭니다.</div>
+  <div class="note">마라탕이나 닭발처럼 자극적인 것을 드신 다음,<br>입을 씻어내는 한 모금으로도 좋습니다.</div>
+</section>
+
+<div class="rule"></div>
+
+<!-- 9 스펙 -->
+<section class="spec">
+  <div class="eyebrow">09 — 제품 정보</div>
+  <div class="spec-row">
+  <div class="spec-table">
+  <table>
+    <tr><th>용량</th><td>500ml</td></tr>
+    <tr><th>도수</th><td>6도</td></tr>
+    <tr><th>유통기한</th><td>제조일로부터 5개월</td></tr>
+    <tr><th>보관</th><td>냉장</td></tr>
+    <tr><th>원료</th><td>—</td></tr>
+    <tr><th>제조</th><td>여우굴 양조장</td></tr>
+  </table>
+  </div>
+  <div class="spec-shot"><img src="assets/bottle-cutout.webp" alt="하양한모금 500ml"></div>
+  </div>
+</section>
+
+<div class="melt-dark"></div>
+
+<!-- 10 양조장 -->
+<section class="brew brew-head">
+  <div class="eyebrow">10 — 만드는 곳</div>
+</section>
+
+<div class="carousel">
+  <button class="nav prev" aria-label="이전">‹</button>
+  <button class="nav next" aria-label="다음">›</button>
+  <div class="strip">
+  <figure><img src="assets/brew-corridor.webp" alt=""></figure>
+  <figure><img src="assets/brew-close.webp" alt=""></figure>
+  <figure><img src="assets/brew-amber.webp" alt=""></figure>
+  <figure><img src="assets/brew-wide.webp" alt=""></figure>
+    <div class="tail"></div>
+  </div>
+</div>
+
+<section class="brew brew-tail">
+  <div class="h1">서울 도심,<br>어느 <span class="k">여우굴</span></div>
+  <p class="lede">간판 없는 가게에서 술을 빚고 있습니다.<br>하양한모금이 어떻게 만들어지는지 궁금하신 분,<br>직접 막걸리를 담가보고 싶으신 분들을 위해<br><span class="b">원데이클래스</span>를 열고 있습니다.</p>
+  <a class="btn" href="https://map.naver.com/p/search/여우굴" target="_blank" rel="noopener">고대 앞 여우굴 바로 가기</a>
+</section>
+
+<div class="foot">
+  <span>여우굴 · 하양한모금</span>
+  <span>서울 동대문구 제기로 9-4 지하 1층</span>
+</div>
+
+<nav class="dock dock-l" aria-label="섹션 목록 (좌)"><ol></ol></nav>
+<nav class="dock dock-r" aria-label="섹션 목록 (우)">
+  <ol></ol>
+  <button class="dock-toggle" aria-label="섹션 목록 열기"><i></i><i></i></button>
+</nav>
+
+<button class="totop" aria-label="맨 위로"></button>
+
+<script>
+document.querySelectorAll('.carousel').forEach(function(c){
+  var strip = c.querySelector('.strip');
+  var step = function(){ var f = strip.querySelector('figure'); return f ? f.offsetWidth + 10 : 400; };
+  c.querySelector('.prev').addEventListener('click', function(){ strip.scrollBy({left:-step(), behavior:'smooth'}); });
+  c.querySelector('.next').addEventListener('click', function(){ strip.scrollBy({left: step(), behavior:'smooth'}); });
+});
+
+/* 맨 위로 */
+var top_ = document.querySelector('.totop');
+window.addEventListener('scroll', function(){
+  top_.classList.toggle('on', window.scrollY > 700);
+}, {passive:true});
+top_.addEventListener('click', function(){
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+
+/* 섹션 도크 */
+(function(){
+  var ebs = Array.prototype.slice.call(document.querySelectorAll('.eyebrow'));
+  var items = ebs.map(function(eb, i){
+    var host = eb.closest('section') || eb.parentNode;
+    if (!host.id) host.id = 'sec-' + i;
+    var parts = eb.textContent.split('—');
+    return {id: host.id, num: parts[0].trim(), label: (parts[1] || '').trim(), el: host};
+  });
+
+  var docks = Array.prototype.slice.call(document.querySelectorAll('.dock'));
+  docks.forEach(function(d){
+    var ol = d.querySelector('ol');
+    ol.innerHTML = items.map(function(it){
+      return '<li><a href="#' + it.id + '" data-id="' + it.id + '">'
+           + '<span class="ln"></span><span>' + it.num + ' ' + it.label + '</span></a></li>';
+    }).join('');
+    ol.addEventListener('click', function(e){
+      var a = e.target.closest('a'); if (!a) return;
+      e.preventDefault();
+      document.getElementById(a.dataset.id).scrollIntoView({behavior:'smooth', block:'start'});
+      d.classList.remove('open');
+    });
+  });
+
+  var toggle = document.querySelector('.dock-toggle');
+  toggle.addEventListener('click', function(){
+    document.querySelector('.dock-r').classList.toggle('open');
+  });
+
+  var darkEls = Array.prototype.slice.call(document.querySelectorAll('.hang, .brew, .melt-dark, .band, .carousel, .foot'));
+  function spy(){
+    var y = window.scrollY + window.innerHeight * 0.42;
+    var cur = items[0];
+    items.forEach(function(it){ if (it.el.offsetTop <= y) cur = it; });
+    docks.forEach(function(d){
+      d.querySelectorAll('a').forEach(function(a){
+        a.classList.toggle('on', a.dataset.id === cur.id);
+      });
+    });
+    var onDark = darkEls.some(function(el){
+      var t = el.offsetTop, b = t + el.offsetHeight;
+      return y > t && y < b;
+    });
+    docks.forEach(function(d){ d.classList.toggle('on-dark', onDark); });
+  }
+  window.addEventListener('scroll', spy, {passive:true});
+  window.addEventListener('resize', spy);
+  spy();
+})();
+
+/* 스크롤 리빌 */
+(function(){
+  var sel = '.hero-foot > *, section > .eyebrow, section > .h1, section > .lede,'
+          + ' section > .emph, section > .note, section > .qbox, section > .numrow,'
+          + ' section > .diagram, section > table, section > .spec-row,'
+          + ' .press .inner > *, .two-cards, .rule';
+  var selImg = '.still, .bowl, .two-photo, .hold, .pair-photo, .bpanel, .strip figure';
+  var els = Array.prototype.slice.call(document.querySelectorAll(sel));
+  var imgs = Array.prototype.slice.call(document.querySelectorAll(selImg));
+  if (!('IntersectionObserver' in window)) return;
+  imgs.forEach(function(el){ el.classList.add('rvi'); });
+
+  els.forEach(function(el){
+    el.classList.add('rv');
+    var sibs = Array.prototype.slice.call(el.parentNode.children).filter(function(x){
+      return x.classList.contains('rv');
+    });
+    var i = sibs.indexOf(el);
+    if (i > 0) {
+      el.style.transitionDelay = Math.min(i, 4) * 90 + 'ms';
+      el.style.animationRange = 'entry ' + (Math.min(i,4) * 5) + '% cover '
+                              + (22 + Math.min(i,4) * 4) + '%';
+    }
+  });
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, {rootMargin:'0px 0px -12% 0px', threshold:0.08});
+
+  els.concat(imgs).forEach(function(el){ io.observe(el); });
+  setTimeout(function(){
+    els.concat(imgs).forEach(function(el){ el.classList.add('in'); });
+  }, 6000);
+})();
+</script>
+</body>
+</html>
