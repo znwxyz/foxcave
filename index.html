@@ -360,7 +360,7 @@ section.sec-body{padding-top:54px;padding-bottom:112px}
 .strip figure{flex:0 0 auto;height:460px;scroll-snap-align:center;overflow:hidden}
 .strip img{height:100%;width:auto;object-fit:cover;
   filter:grayscale(.92) contrast(1.06) brightness(.94)}
-.strip .tail{flex:0 0 var(--pad);height:460px}
+.strip .tail{flex:0 0 var(--pad)}
 
 /* ── 무드 배너 ── */
 .banner{position:relative;height:560px;overflow:hidden}
@@ -524,9 +524,13 @@ td em{font-style:normal;color:var(--clay);font-weight:500;font-size:var(--t-body
   .dstep{justify-content:flex-end}
   .dcol.a{padding-right:0}
   .dcol.b{border-left:0;border-top:1px solid #332E27;padding-left:0;padding-top:34px}
-  .two-cards{flex-direction:column}
-  .tcard{padding:34px var(--pad) 34px !important}
-  .tcard + .tcard{border-left:0;border-top:1px solid var(--line)}
+  /* 두 병 카드는 모바일에서도 가로 유지 */
+  .tcard{padding:32px 13px 36px !important}
+  .tcard:first-child{padding-left:var(--pad) !important}
+  .tcard + .tcard{padding-right:var(--pad) !important}
+  .twhen{font-size:9.5px;letter-spacing:.11em;margin-bottom:11px}
+  .tname{font-size:clamp(15px,4.1vw,21px);margin-bottom:12px}
+  .tdesc{font-size:clamp(12px,3.3vw,14px);line-height:1.75}
   .spec-row{flex-direction:column;margin-right:0;gap:36px}
   .spec-table{padding-right:0}
   .spec-shot{flex:none;width:100%;padding:36px var(--pad)}
