@@ -107,10 +107,10 @@ img{display:block;width:100%;height:100%;object-fit:cover}
   border-right:1px solid currentColor;border-top:1px solid currentColor;transform:rotate(45deg)}
 .btn-tel{border-color:rgba(255,255,255,.5);font-weight:var(--w-emph);letter-spacing:.02em}
 /* 10 섹션 : 좌(클래스 안내) / 우(문의) 두 세트 */
-.two-up{display:flex;margin-top:44px}
-.two-up .col{flex:1}
-.two-up .col.r{border-left:1px solid rgba(255,255,255,.14);padding-left:54px;text-align:right}
-.two-up .col.l{padding-right:54px}
+.two-up{margin-top:44px}
+.two-up .col.r{margin-top:54px;padding-top:54px;
+  border-top:1px solid rgba(255,255,255,.14);text-align:right}
+.two-up .col.r .lede{margin-left:auto}
 .two-up .lede{margin:0}
 .two-up .btn{margin-top:30px}
 
@@ -475,11 +475,11 @@ section.sec-body{padding-top:54px;padding-bottom:112px}
 /* ── 9 스펙 ── */
 .spec{padding-top:112px;padding-bottom:40px}
 .spec .eyebrow{margin-bottom:36px}
-.spec-row{display:flex;align-items:stretch;margin-right:calc(var(--pad) * -1)}
-.spec-table{flex:1 1 auto;min-width:0;padding-right:52px}
-.spec-shot{flex:0 0 380px;background:var(--paper-2);
-  display:flex;align-items:center;justify-content:center;padding:46px 40px}
-.spec-shot img{width:auto;height:auto;max-width:100%;max-height:430px;object-fit:contain}
+.spec-row{display:flex;align-items:stretch}
+.spec-table{flex:1 1 auto;min-width:0;padding-right:44px}
+.spec-shot{flex:0 0 268px;background:var(--paper-2);
+  display:flex;align-items:center;justify-content:center;padding:42px 30px}
+.spec-shot img{width:auto;height:auto;max-width:100%;max-height:340px;object-fit:contain}
 .spec th{width:104px}
 table{width:100%;border-collapse:collapse}
 th,td{text-align:left;padding:18px 0;border-bottom:1px dashed #E4DACA;
@@ -535,10 +535,8 @@ td em{font-style:normal;color:var(--clay);font-weight:500;font-size:var(--t-body
   .numcol.a{padding-right:0}
   .numcol.b{border-left:0;border-top:1px solid var(--line);padding-left:0;padding-top:36px}
   .numrow::after{display:none}
-  .two-up{flex-direction:column;gap:40px;margin-top:36px}
-  .two-up .col.l{padding-right:0}
-  .two-up .col.r{border-left:0;border-top:1px solid rgba(255,255,255,.14);
-    padding-left:0;padding-top:40px}
+  .two-up{margin-top:36px}
+  .two-up .col.r{margin-top:40px;padding-top:40px}
   .two-up .btn{margin-top:24px}
   .diagram{flex-direction:column;gap:34px;text-align:right}
   .dstep{justify-content:flex-end}
