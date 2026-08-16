@@ -105,11 +105,14 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .btn:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.5)}
 .btn::after{content:"";width:6px;height:6px;flex:0 0 auto;
   border-right:1px solid currentColor;border-top:1px solid currentColor;transform:rotate(45deg)}
-.btn-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
-.btn-row .btn{margin-top:0}
 .btn-tel{border-color:rgba(255,255,255,.5);font-weight:var(--w-emph);letter-spacing:.02em}
-.contact{margin-top:52px;padding-top:30px;border-top:1px solid rgba(255,255,255,.12);
-  font-size:var(--t-body-m);line-height:var(--lh-body-m);color:#A69E90}
+/* 10 섹션 : 좌(클래스 안내) / 우(문의) 두 세트 */
+.two-up{display:flex;margin-top:44px}
+.two-up .col{flex:1}
+.two-up .col.r{border-left:1px solid rgba(255,255,255,.14);padding-left:54px;text-align:right}
+.two-up .col.l{padding-right:54px}
+.two-up .lede{margin:0}
+.two-up .btn{margin-top:30px}
 
 /* ── 스크롤 연동 리빌 ──
    스크롤 위치 = 애니메이션 진행률.
@@ -532,6 +535,11 @@ td em{font-style:normal;color:var(--clay);font-weight:500;font-size:var(--t-body
   .numcol.a{padding-right:0}
   .numcol.b{border-left:0;border-top:1px solid var(--line);padding-left:0;padding-top:36px}
   .numrow::after{display:none}
+  .two-up{flex-direction:column;gap:40px;margin-top:36px}
+  .two-up .col.l{padding-right:0}
+  .two-up .col.r{border-left:0;border-top:1px solid rgba(255,255,255,.14);
+    padding-left:0;padding-top:40px}
+  .two-up .btn{margin-top:24px}
   .diagram{flex-direction:column;gap:34px;text-align:right}
   .dstep{justify-content:flex-end}
   .dcol.a{padding-right:0}
@@ -544,11 +552,14 @@ td em{font-style:normal;color:var(--clay);font-weight:500;font-size:var(--t-body
   .twhen{font-size:9.5px;letter-spacing:.11em;margin-bottom:11px}
   .tname{font-size:clamp(15px,4.1vw,21px);margin-bottom:12px}
   .tdesc{font-size:clamp(12px,3.3vw,14px);line-height:1.75}
-  .spec-row{flex-direction:column;margin-right:0;gap:36px}
-  .spec-table{padding-right:0}
-  .spec-shot{flex:none;width:100%;padding:36px var(--pad)}
-  .spec th{width:76px}
-  .spec th,.spec td{padding:9px 0;font-size:13px;line-height:1.5}
+  .spec{padding-bottom:24px}
+  .spec-row{gap:0}
+  .spec-table{padding-right:18px}
+  .spec-shot{flex:0 0 34%;padding:22px 14px}
+  .spec-shot img{max-height:210px}
+  .spec th{width:58px}
+  .spec th,.spec td{padding:7px 0;font-size:11.5px;line-height:1.45}
+  .spec td em{font-size:10.5px}
   .num{font-size:clamp(56px,15vw,96px)}
   .bpanel .bbottom{font-size:clamp(19px,4.4vw,30px);bottom:18px}
   .bpanel .btop{top:16px}
@@ -739,9 +750,9 @@ td em{font-style:normal;color:var(--clay);font-weight:500;font-size:var(--t-body
 <section class="pair al-r sec-body">
   <div class="h1"><span class="k">바게트</span>와<br>페어링이 되는 막걸리</div>
   <p class="lede">막걸리의 단짝, 전이나 튀김도 좋지만<br>하양한모금은 <span class="b">조금 다른 곁들임을 추천</span>합니다.</p>
-  <p class="lede">마켓이나 시음회에서 늘 내어드리는 안주는 바게트입니다.<br>한 번씩 갸웃하시다가도 <br class="mb">한 모금 맛보고 나면 고개를 끄덕이게 되죠.</p>
+  <p class="lede">마켓, 시음회에서 늘 내어드리는 안주는 바게트입니다.<br>한 번씩 갸웃하시다가도 <br class="mb">한 모금 맛보고 나면 고개를 끄덕이게 되죠.</p>
   <div class="emph">안 어울릴 것 같은 둘이 만났을 때 오는 깜짝스러운 즐거움.<br>그 낙차가 이 술을 오래 기억하게 만듭니다.</div>
-  <div class="note">마라탕이나 닭발처럼 자극적인 것을 드신 다음,<br>입을 씻어내는 한 모금으로도 좋습니다.</div>
+  <div class="note">닭발이나 마라탕처럼 자극적인 것을 드신 다음,<br>입을 씻어내는 한 모금으로도 좋습니다.</div>
 </section>
 
 <div class="rule"></div>
@@ -787,11 +798,15 @@ td em{font-style:normal;color:var(--clay);font-weight:500;font-size:var(--t-body
 
 <section class="brew brew-tail">
   <div class="h1">서울 도심,<br>어느 <span class="k">여우굴</span> 속</div>
-  <p class="lede">간판 없는 가게에서 여우가 술을 빚고 있습니다.<br>하양한모금이 어떻게 만들어지는지 궁금하신 분,<br>직접 막걸리를 담가보고 싶으신 분들을 위해<br><span class="b">막걸리 빚기 원데이 클래스</span>를 열고 있습니다.</p>
-  <div class="contact">구매, 시음, 도소매 납품, 행사, 협찬 등<br class="mb">편하게 문의 바랍니다.</div>
-  <div class="btn-row">
-    <a class="btn" href="https://naver.me/G281kMFL" target="_blank" rel="noopener">고대 앞 여우굴 바로 가기</a>
-    <a class="btn btn-tel" href="tel:0507-1427-1687">0507-1427-1687</a>
+  <div class="two-up">
+    <div class="col l">
+      <p class="lede">간판 없는 가게에서 여우가 술을 빚고 있습니다.<br>하양한모금이 어떻게 만들어지는지 궁금하신 분,<br>직접 막걸리를 담가보고 싶으신 분들을 위해<br><span class="b">막걸리 빚기 원데이 클래스</span>를 열고 있습니다.</p>
+      <a class="btn" href="https://naver.me/G281kMFL" target="_blank" rel="noopener">고대 앞 여우굴 바로 가기</a>
+    </div>
+    <div class="col r">
+      <p class="lede">구매, 시음, 도소매 납품,<br>행사, 협찬 등<br>편하게 문의 바랍니다.</p>
+      <a class="btn btn-tel" href="tel:0507-1427-1687">0507-1427-1687</a>
+    </div>
   </div>
 </section>
 
