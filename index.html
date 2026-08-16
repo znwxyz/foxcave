@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>하양한모금 · 여우굴 | 서울 도심 지하 양조장</title>
-<meta name="description" content="열흘이 아니라 한 달. 압착하지 않고 빚는 막걸리, 하양한모금. 서울 동대문구 제기로 여우굴 양조장.">
+<meta name="description" content="호기심 많은 여우가 빚는 술, 투명한 하양 한 모금. 서울 동대문구 제기로 여우굴 양조장.">
 <meta property="og:title" content="하양한모금 · 여우굴">
-<meta property="og:description" content="가볍고 맑은 맛, 첫 술로 드시기 좋은 하양 한 모금입니다.">
+<meta property="og:description" content="호기심 많은 여우가 빚는 술, 투명한 하양 한 모금">
 <meta property="og:type" content="website">
 <meta property="og:image" content="assets/hero-beach.webp">
 <style>
@@ -441,7 +441,9 @@ section.sec-body{padding-top:54px;padding-bottom:112px}
   background:linear-gradient(to bottom,#EDE4D6 0%,#EDE4D6 58%,#F6F1E9 100%)}
 .tcard{flex:1;padding:48px var(--pad) 56px}
 .tcard:first-child{padding-right:48px}
-.tcard + .tcard{padding-left:48px;border-left:1px solid var(--line)}
+.tcard + .tcard{padding-left:64px;position:relative}
+.tcard + .tcard::before{content:"";position:absolute;left:0;top:18%;bottom:18%;
+  width:1px;background:var(--line)}
 .twhen{font-size:var(--t-label);line-height:var(--lh-label);letter-spacing:.18em;font-weight:800;color:var(--clay);margin-bottom:14px}
 .tname{font-size:21px;line-height:var(--lh-h2);letter-spacing:-.03em;font-weight:var(--w-emph);margin-bottom:16px}
 .tdesc{font-size:14px;line-height:var(--lh-body-s);color:var(--ink-2)}
@@ -468,7 +470,8 @@ section.sec-body{padding-top:54px;padding-bottom:112px}
 .spec-shot img{width:auto;height:auto;max-width:100%;max-height:430px;object-fit:contain}
 .spec th{width:104px}
 table{width:100%;border-collapse:collapse}
-th,td{text-align:left;padding:18px 0;border-bottom:1px solid var(--line);font-size:var(--t-body-m);line-height:var(--lh-body-m);vertical-align:top}
+th,td{text-align:left;padding:18px 0;border-bottom:1px dashed #E4DACA;
+  font-size:var(--t-body-m);line-height:var(--lh-body-m);vertical-align:top}
 th{width:140px;font-weight:600;color:var(--ink-3)}
 td{font-weight:var(--w-emph)}
 td em{font-style:normal;color:var(--clay);font-weight:500;font-size:var(--t-body-s)}
@@ -526,6 +529,7 @@ td em{font-style:normal;color:var(--clay);font-weight:500;font-size:var(--t-body
   .dcol.b{border-left:0;border-top:1px solid #332E27;padding-left:0;padding-top:34px}
   /* 두 병 카드는 모바일에서도 가로 유지 */
   .tcard{padding:32px 13px 36px !important}
+  .tcard + .tcard{padding-left:24px !important}
   .tcard:first-child{padding-left:var(--pad) !important}
   .tcard + .tcard{padding-right:var(--pad) !important}
   .twhen{font-size:9.5px;letter-spacing:.11em;margin-bottom:11px}
@@ -534,7 +538,8 @@ td em{font-style:normal;color:var(--clay);font-weight:500;font-size:var(--t-body
   .spec-row{flex-direction:column;margin-right:0;gap:36px}
   .spec-table{padding-right:0}
   .spec-shot{flex:none;width:100%;padding:36px var(--pad)}
-  .spec th{width:88px}
+  .spec th{width:76px}
+  .spec th,.spec td{padding:9px 0;font-size:13px;line-height:1.5}
   .num{font-size:clamp(56px,15vw,96px)}
   .bpanel .bbottom{font-size:clamp(19px,4.4vw,30px);bottom:18px}
   .bpanel .btop{top:16px}
@@ -564,7 +569,7 @@ td em{font-style:normal;color:var(--clay);font-weight:500;font-size:var(--t-body
   <div class="hero-photo soft soft-2 soft-btm"><img src="assets/hero-beach.webp" alt=""></div>
   <div class="hero-foot">
     <div class="display hero-title">첫 술은<br><span class="k">하양</span></div>
-    <div class="hero-sub">서울 도심 지하 양조장에서<br>한 달을 채워 빚고 있습니다</div>
+    <div class="hero-sub">호기심 많은 여우가 빚는 술,<br>투명한 하양 한 모금</div>
   </div>
 </div>
 
