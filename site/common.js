@@ -39,7 +39,7 @@ menuButton?.addEventListener('click', () => {
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && menuButton?.getAttribute('aria-expanded') === 'true') { menuButton.click(); menuButton.focus(); }
 });
-export const configuration = api('/api/config').catch(() => ({ isPreview: false, isAcceptingRequests: false }));
+export const configuration = api('/foxcave/api/config').catch(() => ({ isPreview: false, isAcceptingRequests: false }));
 configuration.then(({ isPreview }) => { document.querySelector('#preview-banner').hidden = !isPreview; });
 const search = document.querySelector('#faq-search');
 search?.addEventListener('input', () => {

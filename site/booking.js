@@ -78,7 +78,7 @@ function renderPrice() {
 async function refresh() {
   const number = ++state.requestNumber;
   try {
-    const result = await api(`/api/slots?month=${state.month}`);
+    const result = await api(`/foxcave/api/slots?month=${state.month}`);
     if (number !== state.requestNumber) return;
     state.slots = result.slots;
     const selected = state.slots.find((slot) => slot.id === state.selectedSlot?.id);
@@ -106,8 +106,8 @@ form.addEventListener('submit', async (event) => {
   if (!form.reportValidity()) return;
   const button = form.querySelector('[type=submit]'); button.disabled = true; button.textContent = '신청 내용을 접수하고 있어요';
   try {
-    const result = await api('/api/requests', { method: 'POST', body: JSON.stringify(formValue(form)) });
-    location.href = `/booking/status/#${result.token}`;
+    const result = await api('/foxcave/api/requests', { method: 'POST', body: JSON.stringify(formValue(form)) });
+    location.href = `/foxcave/booking/status/#${result.token}`;
   } catch (error) {
     showError(errorNode, error.message); await refresh(); button.disabled = false; button.textContent = '예약 신청하기 ↗';
   }

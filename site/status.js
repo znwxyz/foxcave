@@ -13,7 +13,7 @@ const DETAILS = { pending: '아직 예약 확정 전입니다. 신청 내용을 
   contacted: '외부 강의와 기타 문의의 최종 일정·비용은 담당자와 나눈 안내를 확인해 주세요.' };
 async function refresh() {
   try {
-    const request = await api('/api/request', { headers: HEADERS });
+    const request = await api('/foxcave/api/request', { headers: HEADERS });
     node.replaceChildren(makeElement('span', request.kind === 'class' ? '원데이클래스' : '외부 강의 · 문의', 'fc-pill'),
       makeElement('h2', LABELS[request.status]), makeElement('p', DETAILS[request.status]),
       makeElement('p', request.start ? `${dateLabel(request.start)} · ${request.duration}분 · ${request.party}명` : `예상 참여 인원 ${request.party}명`),
@@ -28,7 +28,7 @@ document.querySelector('#copy-status').addEventListener('click', async () => {
 document.querySelector('#refresh-status').addEventListener('click', refresh);
 document.querySelector('#cancel-request').addEventListener('click', async (event) => {
   const button = event.currentTarget; button.disabled = true;
-  try { await api('/api/request/cancel', { method: 'POST', headers: HEADERS, body: '{}' }); await refresh(); }
+  try { await api('/foxcave/api/request/cancel', { method: 'POST', headers: HEADERS, body: '{}' }); await refresh(); }
   catch (error) { feedback.textContent = error.message; }
   finally { button.disabled = false; }
 });
