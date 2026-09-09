@@ -52,17 +52,6 @@ search?.addEventListener('input', () => {
   document.querySelector('#faq-count').textContent = `${count}개의 답변`;
   document.querySelector('#faq-empty').hidden = count > 0;
 });
-document.querySelectorAll('[data-review-filter]').forEach((button) => {
-  button.addEventListener('click', () => {
-    document.querySelectorAll('[data-review-filter]').forEach((item) => {
-      item.classList.toggle('is-active', item === button);
-      item.setAttribute('aria-pressed', String(item === button));
-    });
-    document.querySelectorAll('[data-review-tag]').forEach((review) => {
-      review.hidden = button.dataset.reviewFilter !== '전체' && button.dataset.reviewFilter !== review.dataset.reviewTag;
-    });
-  });
-});
 const chatToggle = document.querySelector('.fc-chat-toggle');
 const chatPanel = document.querySelector('#chat-panel');
 function setChatOpen(isOpen) {
