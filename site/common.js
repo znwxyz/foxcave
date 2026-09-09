@@ -40,7 +40,6 @@ document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && menuButton?.getAttribute('aria-expanded') === 'true') { menuButton.click(); menuButton.focus(); }
 });
 export const configuration = api('/foxcave/api/config').catch(() => ({ isPreview: false, isAcceptingRequests: false }));
-configuration.then(({ isPreview }) => { document.querySelector('#preview-banner').hidden = !isPreview; });
 const search = document.querySelector('#faq-search');
 search?.addEventListener('input', () => {
   const query = search.value.trim().toLocaleLowerCase('ko');
@@ -73,3 +72,59 @@ if (topButton) {
   topButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
   syncTopButton();
 }
+
+// 홈 히어로 배너. 자동으로 넘기되 사용자가 손대면 멈춘다.
+const HERO_INTERVAL = 5500;
+document.querySelectorAll('[data-hero]').forEach((banner) => {
+  const track = banner.querySelector('[data-hero-track]');
+  const slides = [...banner.querySelectorAll('.fc-slide')];
+  const dots = [...banner.querySelectorAll('[data-hero-go]')];
+  if (slides.length < 2) return;
+
+  const stillPreferred = matchMedia('(prefers-reduced-motion: reduce)');
+  let current = 0;
+  let timer = null;
+  let stopped = false;
+
+  const show = (next) => {
+    current = (next + slides.length) % slides.length;
+    track.style.transform = `translateX(-${current * 100}%)`;
+    slides.forEach((slide, index) => { slide.toggleAttribute('aria-hidden', index !== current); });
+    dots.forEach((dot, index) => {
+      if (index === current) dot.setAttribute('aria-current', 'true');
+      else dot.removeAttribute('aria-current');
+    });
+  };
+  const stopAuto = () => { clearInterval(timer); timer = null; };
+  const startAuto = () => {
+    stopAuto();
+    if (stopped || stillPreferred.matches) return;
+    timer = setInterval(() => show(current + 1), HERO_INTERVAL);
+  };
+  // 화살표나 점을 누른 뒤에는 자동 넘김을 다시 켜지 않는다.
+  const goByUser = (next) => { stopped = true; stopAuto(); show(next); };
+
+  banner.querySelector('[data-hero-prev]').addEventListener('click', () => goByUser(current - 1));
+  banner.querySelector('[data-hero-next]').addEventListener('click', () => goByUser(current + 1));
+  dots.forEach((dot) => dot.addEventListener('click', () => goByUser(Number(dot.dataset.heroGo))));
+  banner.addEventListener('mouseenter', stopAuto);
+  banner.addEventListener('mouseleave', startAuto);
+  banner.addEventListener('focusin', stopAuto);
+  banner.addEventListener('focusout', startAuto);
+  // 다른 탭을 보는 동안에는 넘기지 않는다.
+  document.addEventListener('visibilitychange', () => (document.hidden ? stopAuto() : startAuto()));
+  stillPreferred.addEventListener('change', startAuto);
+
+  // 좁은 화면에서는 손가락으로 옆으로 밀어 넘긴다.
+  let touchX = null;
+  banner.addEventListener('touchstart', (event) => { touchX = event.changedTouches[0].clientX; }, { passive: true });
+  banner.addEventListener('touchend', (event) => {
+    if (touchX === null) return;
+    const moved = event.changedTouches[0].clientX - touchX;
+    touchX = null;
+    if (Math.abs(moved) > 45) goByUser(current + (moved < 0 ? 1 : -1));
+  }, { passive: true });
+
+  show(0);
+  startAuto();
+});
