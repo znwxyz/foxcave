@@ -11,6 +11,6 @@ form.addEventListener('submit', async (event) => {
     const result = await api('/foxcave/api/requests', { method: 'POST', body: JSON.stringify(formValue(form)) });
     location.href = `/foxcave/booking/status/#${result.token}`;
   } catch (error) {
-    showError(errorNode, error.message); button.disabled = false; button.textContent = '문의 남기기 ↗';
+    showError(errorNode, error.message); button.disabled = false; button.textContent = '문의 남기기 ▸';
   }
 });

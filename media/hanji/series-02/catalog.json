@@ -1,0 +1,62 @@
+[
+  {
+    "id": "01",
+    "title": "파전과 한 잔",
+    "kind": "product",
+    "approach": "몰입형",
+    "alt": "파전과 작은 막걸리 잔 곁에 하양한모금 병이 놓인 따뜻한 한지 그림",
+    "src": "/media/hanji/series-02/01-table-linen.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "id": "02",
+    "title": "바게트와 하양한모금",
+    "kind": "product",
+    "approach": "몰입형",
+    "alt": "아이보리 린넨 위 하양한모금 병과 바게트, 작은 막걸리 잔을 그린 따뜻한 한지 일러스트",
+    "src": "/media/hanji/series-02/02-baguette-linen.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "id": "05",
+    "title": "고두밥을 섞는 손",
+    "kind": "class",
+    "approach": "몰입형",
+    "alt": "커다란 앞쪽 손과 뒤쪽 손 사이로 고두밥이 쌓이고 볼 테두리가 화면 양옆과 아래에서 잘리는 한지 일러스트",
+    "src": "/media/hanji/series-02/05-rice-hands.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "id": "06",
+    "title": "누룩을 준비하는 장면",
+    "kind": "class",
+    "approach": "몰입형",
+    "alt": "어깨 너머로 누룩 봉투를 준비하는 두 손이 보이는 한지 그림",
+    "src": "/media/hanji/series-02/06-nuruk-shoulder.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "id": "07",
+    "title": "술을 옮기는 순간",
+    "kind": "class",
+    "approach": "실험형",
+    "alt": "용기 입구 높이에서 납작한 테두리와 대각선 술줄기를 올려다본 한지 그림",
+    "src": "/media/hanji/series-02/07-ladle-perspective-v2.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "id": "08",
+    "title": "직접 담근 술통",
+    "kind": "class",
+    "approach": "실험형",
+    "alt": "가로 화면을 채운 양팔과 앞치마 앞에서 한 손으로 술통 바닥을 받치고 다른 손으로 옆면을 잡은 한지 그림",
+    "src": "/media/hanji/series-02/08-jar-landscape.jpg",
+    "width": 1536,
+    "height": 1024
+  }
+]
