@@ -109,7 +109,7 @@ form.addEventListener('submit', async (event) => {
     const result = await api('/foxcave/api/requests', { method: 'POST', body: JSON.stringify(formValue(form)) });
     location.href = `/foxcave/booking/status/#${result.token}`;
   } catch (error) {
-    showError(errorNode, error.message); await refresh(); button.disabled = false; button.textContent = '예약 신청하기 ↗';
+    showError(errorNode, error.message); await refresh(); button.disabled = false; button.textContent = '예약 신청하기 ▸';
   }
 });
 document.querySelector('#month-prev').addEventListener('click', () => shiftMonth(-1));

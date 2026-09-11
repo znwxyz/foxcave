@@ -1,0 +1,164 @@
+[
+  {
+    "title": "벼이삭과 하양한모금",
+    "kind": "product",
+    "original": "/media/product/rice-still.png",
+    "alt": "쌀과 맑은 술의 맛을 표현한 한지 그림",
+    "src": "/media/hanji/details/product-rice.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "title": "누룩 배양",
+    "kind": "product",
+    "original": "/media/product/nuruk-culture.png",
+    "alt": "누룩을 가까이 그린 한지 그림",
+    "src": "/media/hanji/details/product-nuruk.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "title": "발효의 시간",
+    "kind": "product",
+    "original": "/media/product/ferment-trays.png",
+    "alt": "발효 중인 쌀과 용기의 한지 그림",
+    "src": "/media/hanji/details/product-ferment.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "title": "숙성의 물방울",
+    "kind": "product",
+    "original": "/media/product/droplets.png",
+    "alt": "숙성 공간의 물방울을 그린 한지 그림",
+    "src": "/media/hanji/details/product-droplets.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "title": "맑고 부드러운 한 잔",
+    "kind": "product",
+    "original": "/media/product/bowl.png",
+    "alt": "투명한 잔에 담긴 희고 고운 술의 한지 그림",
+    "src": "/media/hanji/details/product-bowl.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "title": "고운 곡물의 결",
+    "kind": "product",
+    "original": "/media/product/texture-flour.png",
+    "alt": "곡물 가루가 펼쳐진 한지 질감",
+    "src": "/media/hanji/details/product-flour.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "title": "하양한모금과 한 잔",
+    "kind": "product",
+    "original": "/media/product/two-bottles.png",
+    "alt": "하양한모금 병 옆에 막걸리를 담은 얇고 길쭉한 유리잔이 놓인 한지 그림",
+    "src": "/media/hanji/details/product-bottle-glass-linen.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "title": "손에 든 하양한모금",
+    "kind": "product",
+    "original": "/media/product/hand-beach.png",
+    "alt": "손에 든 하양한모금 병의 한지 그림",
+    "src": "/media/hanji/details/product-hold-linen.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "title": "하양한모금 패키지",
+    "kind": "product",
+    "original": "/media/product/bottle-cutout.png",
+    "alt": "하양한모금 500mL 패키지를 그린 한지 그림",
+    "src": "/media/hanji/details/product-package.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "title": "양조장의 안쪽",
+    "kind": "product",
+    "original": "/media/product/brew-corridor.png",
+    "alt": "여우굴 양조장 설비 통로의 한지 그림",
+    "src": "/media/hanji/details/product-brew-corridor.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "title": "작업대 가까이",
+    "kind": "product",
+    "original": "/media/product/brew-close.png",
+    "alt": "여과기와 작업대를 가까이 그린 한지 그림",
+    "src": "/media/hanji/details/product-brew-close.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "title": "불을 켠 양조장",
+    "kind": "product",
+    "original": "/media/product/brew-amber.png",
+    "alt": "따뜻한 빛이 감도는 양조장 작업 테이블의 한지 그림",
+    "src": "/media/hanji/details/product-brew-amber.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "title": "여우굴을 둘러보며",
+    "kind": "product",
+    "original": "/media/product/brew-wide.png",
+    "alt": "여우굴 내부 양조 설비를 펼쳐 보이는 한지 그림",
+    "src": "/media/hanji/details/product-brew-wide.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "title": "수업을 준비하는 시간",
+    "kind": "class",
+    "original": "/media/class/c-ingredients.png",
+    "alt": "막걸리 수업에 사용하는 재료와 도구의 한지 그림",
+    "src": "/media/hanji/details/class-ingredients.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "title": "고두밥이 익는 자리",
+    "kind": "class",
+    "original": "/media/class/c-steamer.png",
+    "alt": "찜기와 고두밥을 그린 한지 그림",
+    "src": "/media/hanji/details/class-steamer.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "title": "함께 빚는 막걸리",
+    "kind": "class",
+    "original": "/media/class/c-class.png",
+    "alt": "함께 막걸리를 빚는 수업의 한지 그림",
+    "src": "/media/hanji/details/class-together.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "title": "한 팀을 위한 공간",
+    "kind": "class",
+    "original": "/media/class/c-room.png",
+    "alt": "여우굴 클래스 공간의 한지 그림",
+    "src": "/media/hanji/details/class-room.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "title": "기다리는 동안 한 잔",
+    "kind": "class",
+    "original": "/media/class/c-bottle-cup.png",
+    "alt": "하양한모금과 시음 잔의 한지 그림",
+    "src": "/media/hanji/details/class-tasting.jpg",
+    "width": 1536,
+    "height": 1024
+  }
+]

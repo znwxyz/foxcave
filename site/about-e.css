@@ -1,0 +1,96 @@
+/* 소개 본문은 그림의 가로 구도와 종이 질감을 자르지 않고 보여준다. */
+.fc-about-carousel { position:relative; touch-action:pan-y pinch-zoom; }
+.fc-about-carousel:focus-visible { outline:2px solid var(--fc-accent); outline-offset:5px; }
+.fc-about-carousel .fc-about-carousel-slides { display:grid; aspect-ratio:3/2; overflow:hidden; }
+.fc-about-carousel .fc-about-carousel-slide { grid-area:1/1; min-width:0; min-height:0; opacity:0; pointer-events:none; transition:opacity .75s ease; }
+.fc-about-carousel .fc-about-carousel-slide.is-current { opacity:1; z-index:1; pointer-events:auto; }
+.fc-about-carousel .fc-about-carousel-slide img { width:100%; height:100%; object-fit:contain; }
+.fc-about-carousel .fc-about-carousel-controls { position:absolute; inset:0; z-index:2; pointer-events:none; color:var(--fc-ink); }
+.fc-about-carousel .fc-about-carousel-controls button { position:absolute; top:50%; display:grid; place-items:center; width:40px; height:48px; padding:0; border:0; background:transparent; color:inherit; font-size:28px; line-height:1; opacity:.72; pointer-events:auto; transform:translateY(-50%); }
+.fc-about-carousel .fc-about-carousel-prev { left:5px; }
+.fc-about-carousel .fc-about-carousel-next { right:5px; }
+.fc-about-carousel .fc-about-carousel-controls button:hover { opacity:1; }
+.fc-about-carousel .fc-about-carousel-controls button:focus-visible { outline:2px solid currentColor; outline-offset:-3px; }
+@media(prefers-reduced-motion:reduce) {
+  .fc-about-carousel .fc-about-carousel-slide { transition:none; }
+}
+
+.fc-about-page { margin-bottom:88px; }
+.fc-about-page :is(section,div,figure) { min-width:0; }
+.fc-about-page h2 { font-size:26px; line-height:1.55; }
+.fc-about-page p { font-size:13px; line-height:2; color:var(--fc-muted); word-break:keep-all; }
+.fc-about-page p+p { margin-top:13px; }
+.fc-about-page img { display:block; width:100%; height:auto; }
+.fc-about-page figure { margin:0; }
+.fc-about-page .fc-button { min-height:46px; gap:25px; padding:11px 17px; font-size:11px; }
+.fc-about-opening { display:grid; grid-template-columns:1fr 1fr; align-items:center; gap:clamp(30px,5vw,70px); }
+.fc-about-opening-copy { padding:20px 20px 20px 0; }
+.fc-about-opening-copy h2 { margin-bottom:24px; font-size:29px; }
+.fc-about-opening-copy p { font-size:14px; }
+.fc-about-brewing { margin-top:76px; }
+.fc-about-story { display:grid; grid-template-columns:1fr 1.3fr; align-items:center; }
+.fc-about-story-copy { position:relative; z-index:1; margin-right:-24px; padding:38px; background:var(--fc-white); }
+.fc-about-story-copy h2 { margin-bottom:23px; }
+.fc-about-story-copy .fc-button { margin-top:25px; }
+.fc-about-story-image { min-width:0; }
+.fc-about-story-reverse { grid-template-columns:1.3fr 1fr; margin-top:76px; }
+.fc-about-story-reverse .fc-about-story-copy { grid-column:2; grid-row:1; margin:0 0 0 -24px; }
+.fc-about-story-reverse .fc-about-story-image { grid-column:1; grid-row:1; }
+.fc-about-fermentation { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px; margin-top:32px; }
+.fc-about-page figure a { display:block; }
+.fc-about-page figure a:focus-visible { outline:2px solid var(--fc-accent); outline-offset:5px; }
+.fc-about-page figcaption { padding-top:13px; color:var(--fc-muted); font-size:11px; line-height:1.7; }
+.fc-about-page figure a:hover+figcaption { color:var(--fc-accent); }
+.fc-about-spaces { margin-top:76px; }
+.fc-about-spaces>h2 { margin-bottom:27px; }
+.fc-about-gallery { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); align-items:start; gap:24px 28px; }
+.fc-about-directions { margin-top:65px; padding:36px 38px 40px; background:var(--fc-white); }
+.fc-about-directions-heading { display:flex; align-items:center; justify-content:space-between; gap:24px; padding-bottom:28px; border-bottom:1px solid var(--fc-line); }
+.fc-about-address { display:grid; grid-template-columns:1.3fr 1fr; gap:27px 50px; margin:28px 0 0; }
+.fc-about-address dt { margin-bottom:8px; font-size:11px; color:var(--fc-muted); }
+.fc-about-address dd { margin:0; font-size:13px; line-height:1.95; word-break:keep-all; }
+.fc-about-address a { text-decoration:none; }
+.fc-about-address a:hover { text-decoration:underline; }
+
+@media(max-width:900px) {
+  .fc-about-opening { gap:30px; }
+  .fc-about-opening-copy { padding-right:0; }
+  .fc-about-opening-copy h2 { font-size:25px; }
+  .fc-about-opening-copy p { font-size:13px; }
+  .fc-about-opening-copy p br { display:none; }
+  .fc-about-story-copy { padding:29px; }
+  .fc-about-page h2 { font-size:23px; }
+  .fc-about-fermentation { gap:16px; }
+  .fc-about-gallery { gap:21px; }
+}
+@media(max-width:760px) {
+  .fc-about-opening { grid-template-columns:1fr; gap:24px; }
+  .fc-about-opening-image { width:min(100%,520px); }
+  .fc-about-opening-copy { padding:0; }
+  .fc-about-opening-copy h2 { margin-bottom:18px; }
+  .fc-about-opening-copy h2 br { display:none; }
+  .fc-about-story,.fc-about-story-reverse { grid-template-columns:1fr; }
+  .fc-about-story .fc-about-story-image { grid-column:1; grid-row:1; }
+  .fc-about-story .fc-about-story-copy { grid-column:1; grid-row:2; margin:-15px 18px 0; padding:30px; }
+  .fc-about-fermentation { margin-top:28px; }
+  .fc-about-gallery { gap:24px 18px; }
+  .fc-about-directions { padding:30px; }
+  .fc-about-address { gap:25px; }
+}
+@media(max-width:540px) {
+  .fc-about-page { margin-bottom:55px; }
+  .fc-about-page h2 { font-size:23px; }
+  .fc-about-page p { font-size:13px; }
+  .fc-about-brewing,.fc-about-story-reverse,.fc-about-spaces { margin-top:48px; }
+  .fc-about-story .fc-about-story-copy { margin:-12px 12px 0; padding:26px 23px; }
+  .fc-about-story-copy h2 { margin-bottom:18px; }
+  .fc-about-story-copy .fc-button { margin-top:22px; }
+  .fc-about-fermentation { grid-template-columns:1fr; gap:23px; }
+  .fc-about-page figcaption { padding-top:10px; font-size:11px; }
+  .fc-about-spaces>h2 { margin-bottom:22px; }
+  .fc-about-gallery { grid-template-columns:1fr; gap:23px; }
+  .fc-about-directions { margin-top:42px; padding:27px 23px; }
+  .fc-about-directions-heading { align-items:flex-start; flex-direction:column; gap:18px; padding-bottom:25px; }
+  .fc-about-address { grid-template-columns:1fr; gap:22px; margin-top:24px; }
+  .fc-about-address dd { font-size:12px; }
+}

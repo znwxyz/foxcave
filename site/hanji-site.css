@@ -1,0 +1,66 @@
+/* 승인된 한지 그림의 공통 프레임. 원본 제품·클래스 상세에는 로드하지 않는다. */
+:root {
+  --fc-art-hero-height: clamp(14rem, 52vw, 23rem);
+  --fc-art-hero-position: 50% 52%;
+  --fc-art-gap: clamp(1.25rem, 3vw, 2.5rem);
+  --fc-art-section-gap: clamp(3rem, 6vw, 5.5rem);
+  --fc-art-caption-gap: .875rem;
+  --fc-art-label-size: .8125rem;
+  --fc-art-heading-size: clamp(1.375rem, 2.2vw, 1.875rem);
+  --fc-art-copy-size: .8125rem;
+  --fc-art-caption-size: .6875rem;
+  --fc-art-hairline: 1px;
+  --fc-art-ratio: 3 / 2;
+}
+.fc-art-image { display: block; width: 100%; height: auto; }
+.fc-art-hero {
+  width: 100%;
+  height: var(--fc-art-hero-height);
+  overflow: hidden;
+  background: var(--fc-paper-dark);
+}
+.fc-art-hero .fc-art-image {
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--fc-art-hero-position);
+}
+.fc-art-hero--brewery { --fc-art-hero-position: 50% 60%; }
+.fc-art-hero--ingredients { --fc-art-hero-position: 50% 66%; }
+.fc-art-hero--together { --fc-art-hero-position: 50% 18%; }
+.fc-art-hero--riceHands { --fc-art-hero-position: 50% 57%; }
+.fc-art-hero--bottleGlass { --fc-art-hero-position: 50% 53%; }
+.fc-art-hero--bowl { --fc-art-hero-position: 50% 53%; }
+.fc-art-pair, .fc-art-guides { display: grid; gap: var(--fc-art-gap); }
+.fc-art-scenes, .fc-art-guides { margin-block: var(--fc-art-section-gap); }
+.fc-art-scenes-heading { margin-bottom: var(--fc-art-gap); }
+.fc-art-scenes-heading h2 { font-size: var(--fc-art-heading-size); }
+.fc-art-scenes-heading p {
+  margin-top: var(--fc-art-caption-gap);
+  color: var(--fc-muted);
+  font-size: var(--fc-art-copy-size);
+}
+.fc-art-figure { margin: 0; min-width: 0; }
+.fc-art-figure figcaption {
+  margin-top: var(--fc-art-caption-gap);
+  color: var(--fc-muted);
+  font-size: var(--fc-art-caption-size);
+}
+.fc-art-guide { display: block; min-width: 0; }
+.fc-art-guide .fc-art-image { aspect-ratio: var(--fc-art-ratio); object-fit: cover; }
+.fc-art-guide > span {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-block: var(--fc-art-gap);
+  border-bottom: var(--fc-art-hairline) solid var(--fc-line);
+  font-size: var(--fc-art-label-size);
+}
+.fc-art-guide b { color: var(--fc-accent); font-size: var(--fc-art-caption-size); }
+.fc-art-guide:hover > span { color: var(--fc-accent); border-color: var(--fc-accent); }
+.fc-art-guide:active > span { background: var(--fc-paper-dark); }
+@media (min-width: 640px) {
+  .fc-art-pair, .fc-art-guides { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 900px) {
+  :root { --fc-art-hero-height: clamp(21rem, 31vw, 31rem); }
+}
