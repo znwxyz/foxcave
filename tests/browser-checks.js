@@ -172,6 +172,16 @@ async (page) => {
   assert(await page.locator('.fc-slot-option').count() === 4, 'Operating days offer four starts');
   assert((await page.locator('.fc-slot-option.is-selected').textContent()).includes('19:00~20:30'), 'Display the start and end time');
   assert((await page.locator('.fc-slot-option.is-selected').textContent()).includes('90분'), 'Weekly class must last 90 minutes');
+  assert((await page.locator('.fc-slot-option.is-selected').textContent()).includes('최대 5명'), 'Weekly class must display its five-person capacity');
+  assert(JSON.stringify(await page.locator('#party option').allTextContents()) === JSON.stringify(['1명', '2명', '3명', '4명', '5명']), 'Weekly booking offers exactly one through five people');
+  await page.locator('#party').selectOption('1');
+  assert(await page.locator('#booking-price').textContent() === '35,000원', 'Keep the one-person price');
+  await page.locator('#party').selectOption('2');
+  assert(await page.locator('#booking-price').textContent() === '65,000원', 'Keep the two-person price');
+  for (const party of ['3', '4', '5']) {
+    await page.locator('#party').selectOption(party);
+    assert(await page.locator('#booking-price').textContent() === '상담 후 안내', 'Do not invent prices for three through five people');
+  }
   assert((await page.locator(`[data-slot-id="${lateSlot}"]`).textContent()).includes('20:30~22:00'), 'Last class ends at 22:00');
   const days = await page.locator('.fc-calendar-day').evaluateAll((buttons) => buttons.map((button) => ({ date: button.dataset.date, available: button.classList.contains('has-slot'), text: button.querySelector('small').textContent })));
   assert(days.filter((day) => day.available).every((day) => [0, 1, 2].includes(new Date(day.date + 'T12:00:00+09:00').getUTCDay())), 'Only Sunday, Monday and Tuesday open');
@@ -184,6 +194,9 @@ async (page) => {
   assert((await page.locator('#receipt-details').textContent()).includes('90분'), 'Weekly receipt reports 90 minutes');
   state = await data();
   assert(state.rows.length === 1 && state.mails.length === 1, 'Weekly slot saves and emails once');
+  assert(state.rows[0][4] === 5 && state.mails[0].body.includes('참여 인원: 5명'), 'Five-person booking reaches the sheet and notification');
+  assert((await page.locator('#receipt-details').textContent()).includes('5명'), 'Receipt reflects the five-person booking');
+  passed.push('one-to-five person selection, existing prices, five-person receipt and matching sheet/email');
   assert(state.mails[0].htmlBody.includes('<strong style="font-weight:700">접수번호:</strong>'), 'Booking notification includes HTML labels');
   await page.getByRole('link', { name: '예약 화면으로 돌아가기' }).click();
   await page.locator('.fc-calendar-day.has-slot').first().waitFor();
@@ -226,6 +239,9 @@ async (page) => {
     passed.push(time + ' booking closes overlapping times immediately and after reload');
   }
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.locator('.fc-slot-option:not(:disabled)').first().click();
+  await page.locator('#party').selectOption('5');
+  assert(await page.locator('#booking-price').textContent() === '상담 후 안내', 'Mobile five-person booking shows consultation pricing');
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'Time ranges must fit the mobile screen');
   await page.locator('.fc-booking-layout').screenshot({ path: 'output/playwright/booking-weekly-mobile.png' });
   assert(errors.length === 0, 'Unexpected browser JavaScript errors: ' + errors.join(', '));

@@ -18,9 +18,9 @@ const FC = Object.freeze({
   MAX_MAIL_ATTEMPTS: 3,
   WEEKLY_EVENING: Object.freeze({
     startDate: '2026-10-19', weekdays: Object.freeze([0, 1, 2]),
-    times: Object.freeze(['19:00', '19:30', '20:00', '20:30']), duration: 90, maxParty: 2,
+    times: Object.freeze(['19:00', '19:30', '20:00', '20:30']), duration: 90, maxParty: 5,
   }),
-  SCHEDULE_NOTE: '자동 일정은 일·월·화 19:00 / 19:30 / 20:00 / 20:30 시작, 각 90분입니다. 같은 날짜·시작 시간의 수동 행이 우선합니다. 하루를 쉬려면 네 시간 모두 접수 열기를 해제하세요. 수동 행을 삭제하면 해당 시간의 자동 일정이 다시 적용됩니다.',
+  SCHEDULE_NOTE: '자동 일정은 일·월·화 19:00 / 19:30 / 20:00 / 20:30 시작, 각 90분·최대 5명·한 팀입니다. 같은 날짜·시작 시간의 수동 행이 우선합니다. 하루를 쉬려면 네 시간 모두 접수 열기를 해제하세요. 수동 행을 삭제하면 해당 시간의 자동 일정이 다시 적용됩니다.',
   HEADERS: ['접수번호', '접수일시', '수업일시', '소요시간 분', '인원', '이름', '휴대폰 번호', '유입 경로', '요청사항', '개인정보 동의', '예약 상태', '메일 상태', '메일 발송일시', '메일 시도 횟수', '최근 메일 시도', '메일 오류', '중복 확인값', '발송 모드', '알림 수신자'],
   SLOT_HEADERS: ['날짜 YYYY-MM-DD', '시작 시간 HH:mm', '소요시간 분', '최대 인원', '접수 열기'],
 });
@@ -72,7 +72,7 @@ function useProductionRecipient() {
 function enableWeeklyEveningSchedule() {
   book_().getSheetByName(FC.SLOTS).getRange('A1').setNote(FC.SCHEDULE_NOTE);
   PropertiesService.getScriptProperties().setProperty('DAILY_EVENING_ENABLED', 'true');
-  console.log('주간 일정 활성화: 2026-10-19부터 일·월·화, 시작 19:00 / 19:30 / 20:00 / 20:30, 각 90분, 최대 2명·한 팀. 종료일 없음.\n19:00 예약 후 20:30 예약 가능, 19:30 또는 20:00 예약 후 해당 날짜 마감.\n수업 일정의 수동 행이 우선하므로 예전 60분 일정과 테스트 행을 확인하세요. 기존 신청과 이메일 모드는 유지됩니다.');
+  console.log('주간 일정 활성화: 2026-10-19부터 일·월·화, 시작 19:00 / 19:30 / 20:00 / 20:30, 각 90분, 최대 5명·한 팀. 종료일 없음.\n19:00 예약 후 20:30 예약 가능, 19:30 또는 20:00 예약 후 해당 날짜 마감.\n수업 일정의 수동 행이 우선하므로 예전 60분 일정과 테스트 행을 확인하세요. 기존 신청과 이메일 모드는 유지됩니다.');
 }
 
 function disableWeeklyEveningSchedule() {

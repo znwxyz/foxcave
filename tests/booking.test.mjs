@@ -220,7 +220,7 @@ test('weekly schedule offers four 90-minute starts on Sunday, Monday and Tuesday
   assert.equal(october.at(-1).start, '2026-10-27T20:30:00+09:00');
   assert.deepEqual([...new Set(october.map((slot) => slot.start.slice(0, 10)))], ['2026-10-19', '2026-10-20', '2026-10-25', '2026-10-26', '2026-10-27']);
   assert.deepEqual(october.slice(0, 4).map((slot) => slot.start.slice(11, 16)), ['19:00', '19:30', '20:00', '20:30']);
-  assert.ok(october.every((slot) => slot.duration === 90 && slot.maxParty === 2 && slot.isAvailable));
+  assert.ok(october.every((slot) => slot.duration === 90 && slot.maxParty === 5 && slot.isAvailable));
   assert.equal(env.get({ action: 'slots', month: '2026-09' }).slots.length, 0);
   for (const [month, count] of [['2026-11', 56], ['2027-02', 48], ['2028-02', 52], ['2100-02', 48], ['2100-12', 48]]) {
     const slots = env.get({ action: 'slots', month }).slots;
@@ -305,12 +305,27 @@ test('recurring slots can be booked directly; invented times, dates and excess p
     assert.equal(env.post(booking({ slotId })).ok, false);
   }
   const input = booking({ slotId: '2026-10-19T19:00:00+09:00' });
-  assert.equal(env.post({ ...input, party: 3 }).code, 'PARTY_LIMIT');
+  assert.equal(env.post({ ...input, party: 6 }).code, 'PARTY_LIMIT');
   const first = env.post(input); assert.equal(first.ok, true); assert.equal(first.receipt.duration, 90);
   assert.deepEqual(env.post(input), first);
   assert.equal(env.post(booking({ slotId: input.slotId })).code, 'SLOT_CLOSED');
   assert.equal(env.requests().length, 1); assert.equal(env.mail.length, 1);
   assert.equal(env.get({ action: 'slots', month: '2026-10' }).slots[0].isAvailable, false);
+});
+
+test('recurring classes accept one through five people, report the count consistently and reject six', () => {
+  for (let party = 1; party <= 5; party++) {
+    const env = createHarness(); env.setup(); env.run('enableWeeklyEveningSchedule');
+    const input = booking({ slotId: '2026-10-19T19:00:00+09:00', party });
+    assert.equal(env.post({ ...input, party: 6 }).code, 'PARTY_LIMIT');
+    assert.equal(env.requests().length, 0); assert.equal(env.mail.length, 0);
+    const result = env.post(input);
+    assert.equal(result.ok, true); assert.equal(result.receipt.party, party);
+    assert.equal(env.requests()[0][4], party);
+    assert.ok(env.mail[0].body.includes('참여 인원: ' + party + '명'));
+    assert.deepEqual(env.post(input), result);
+    assert.equal(env.requests().length, 1); assert.equal(env.mail.length, 1);
+  }
 });
 
 test('each 90-minute booking closes only overlapping starts, including pending and confirmed bookings', () => {
