@@ -9,10 +9,27 @@ const errorNode = document.querySelector('#form-error');
 const state = { month: currentMonth(), slots: [], selectedDay: null, selectedSlot: null, requestNumber: 0, submitting: false, completed: false, pendingValues: null };
 const submitButton = form.querySelector('[type=submit]');
 submitButton.disabled = true;
+// Slot timestamps include +09:00, so this also works outside Korea.
+const isUpcoming = (slot) => Date.parse(slot.start) > Date.now();
+const emptyMonthMessage = '이번 달에 열린 일정이 없어요. 다음 달을 보거나 희망 날짜를 문의해 주세요.';
 function clearSelection() {
   state.selectedSlot = null;
   form.elements.slotId.value = '';
   document.querySelector('#selected-slot').textContent = '날짜와 시간을 먼저 선택해 주세요';
+}
+function expireSlots() {
+  // An uncertain submission must keep its original values for receipt recovery.
+  if (state.submitting || state.completed || state.pendingValues) return;
+  const upcoming = state.slots.filter(isUpcoming);
+  if (upcoming.length === state.slots.length) return;
+  state.slots = upcoming;
+  if (state.selectedSlot && !isUpcoming(state.selectedSlot)) {
+    clearSelection(); showError(errorNode, '선택한 수업의 시작 시간이 지났어요. 다른 일정을 선택해 주세요.');
+  }
+  if (!state.slots.some((slot) => slot.start.startsWith(state.selectedDay ?? '!'))) state.selectedDay = null;
+  submitButton.disabled = !state.slots.some((slot) => slot.isAvailable);
+  if (submitButton.disabled) message.textContent = emptyMonthMessage;
+  renderCalendar(); renderSlots();
 }
 function dayButton(date, number) {
   const slots = state.slots.filter((slot) => slot.start.startsWith(date));
@@ -46,6 +63,7 @@ function renderCalendar() {
 }
 function selectSlot(slot) {
   if (state.submitting || state.completed || state.pendingValues) return;
+  if (!isUpcoming(slot)) { expireSlots(); return; }
   state.selectedSlot = slot;
   form.elements.slotId.value = slot.id;
   const options = Array.from({ length: slot.maxParty }, (_, index) => {
@@ -86,14 +104,14 @@ async function refresh() {
   try {
     const result = await loadSlots(state.month);
     if (number !== state.requestNumber || state.submitting || state.completed) return;
-    state.slots = result.slots;
+    state.slots = result.slots.filter(isUpcoming);
     submitButton.disabled = !state.slots.some((slot) => slot.isAvailable);
     const selected = state.slots.find((slot) => slot.id === state.selectedSlot?.id);
     if (state.selectedSlot && !selected?.isAvailable) {
       clearSelection(); showError(errorNode, '선택한 일정의 접수 상태가 바뀌었어요. 다른 일정을 선택해 주세요.');
     }
     const time = new Intl.DateTimeFormat('ko-KR', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Seoul' }).format(new Date(result.updatedAt));
-    message.textContent = state.slots.some((slot) => slot.isAvailable) ? `${time} 확인 · 신청 후 확인 연락을 받아야 예약이 확정됩니다.` : '이번 달에 열린 일정이 없어요. 다음 달을 보거나 희망 날짜를 문의해 주세요.';
+    message.textContent = state.slots.some((slot) => slot.isAvailable) ? `${time} 확인 · 신청 후 확인 연락을 받아야 예약이 확정됩니다.` : emptyMonthMessage;
     renderCalendar(); renderSlots();
   } catch (error) {
     if (number !== state.requestNumber || state.submitting || state.completed) return;
@@ -112,6 +130,7 @@ function shiftMonth(amount) {
 form.addEventListener('submit', async (event) => {
   event.preventDefault(); showError(errorNode, '');
   if (state.submitting || state.completed) return;
+  if (!state.pendingValues && state.selectedSlot && !isUpcoming(state.selectedSlot)) { expireSlots(); return; }
   if (!state.selectedSlot) { showError(errorNode, '날짜와 시간을 먼저 선택해 주세요.'); document.querySelector('#calendar-month').scrollIntoView(); return; }
   if (!state.pendingValues && !form.reportValidity()) return;
   const values = state.pendingValues || formValue(form);
@@ -160,6 +179,8 @@ document.querySelector('#month-prev').addEventListener('click', () => shiftMonth
 document.querySelector('#month-next').addEventListener('click', () => shiftMonth(1));
 document.querySelector('#calendar-retry').addEventListener('click', refresh);
 form.elements.party.addEventListener('change', renderPrice);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { expireSlots(); refresh(); } });
+// This only updates the page; Google is still queried at the existing interval.
+setInterval(() => { if (!document.hidden) expireSlots(); }, 1000);
 setInterval(() => { if (!document.hidden && !state.selectedSlot) refresh(); }, 60000);
 renderCalendar(); refresh();
