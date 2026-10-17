@@ -1,5 +1,5 @@
 (() => {
-  const CATALOG_URL = '/foxcave/media/hanji/details/catalog.json';
+  const CATALOG_URL = '/media/hanji/details/catalog.json';
   const REFRESH_INTERVAL = 10_000;
   const IS_LOCAL = ['127.0.0.1', 'localhost'].includes(location.hostname);
   const grid = document.querySelector('#hs-photo-grid');

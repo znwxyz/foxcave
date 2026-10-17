@@ -1,5 +1,5 @@
 (() => {
-  const CATALOG_URL = '/foxcave/media/hanji/series-02/catalog.json';
+  const CATALOG_URL = '/media/hanji/series-02/catalog.json';
   const TOTAL_ARTWORKS = 6;
   const REFRESH_INTERVAL_MS = 10_000;
   const FETCH_TIMEOUT_MS = 7_000;
