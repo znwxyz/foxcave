@@ -279,3 +279,17 @@
   .fc-faq-jump { display: flex; flex-wrap: wrap; gap: 8px; }
   .fc-faq-jump a { gap: 6px; padding: 7px 12px; border: 1px solid var(--fc-line); border-radius: 999px; white-space: nowrap; }
 }
+
+/* 기업·기관 단체 강의 */
+.fc-lecture-steps { display: grid; gap: 28px; }
+.fc-lecture-steps figcaption { margin-top: 14px; font-size: 13px; line-height: 1.85; color: var(--fc-muted); }
+.fc-lecture-steps figcaption b { display: block; margin-bottom: 4px; font-size: 15px; font-weight: 500; color: var(--fc-ink); }
+@media (min-width: 761px) { .fc-lecture-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.fc-lecture-terms { margin-bottom: 72px; padding: 36px; background: var(--fc-white); }
+.fc-lecture-terms h2 { font-size: 23px; font-weight: 400; }
+.fc-lecture-terms > p { margin-top: 8px; font-size: 13px; color: var(--fc-muted); }
+.fc-lecture-terms dl { display: grid; gap: 0 32px; margin: 24px 0 0; }
+.fc-lecture-terms dl div { display: grid; grid-template-columns: 88px 1fr; gap: 16px; padding: 14px 0; border-top: 1px solid var(--fc-line); font-size: 13px; }
+.fc-lecture-terms dt { color: var(--fc-accent); font-weight: 500; }
+.fc-lecture-terms dd { margin: 0; }
+@media (min-width: 761px) { .fc-lecture-terms dl { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
