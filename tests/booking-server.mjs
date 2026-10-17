@@ -19,7 +19,7 @@ function reset(nextMode = 'normal', missing = false) {
   const future = new Date(Date.now() + 2 * 86400000);
   const date = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).format(future);
   testMonth = date.slice(0, 7);
-  if (nextMode === 'daily') env.run('enableDailyEveningSchedule');
+  if (['weekly', 'daily'].includes(nextMode)) env.run('enableWeeklyEveningSchedule');
   else { env.addSlot(date, '19:30'); env.addSlot(date, '14:00'); }
   mode = nextMode; missingConfig = missing; requests = []; results.clear();
   if (mode === 'mail-fail') env.mailFails = true;

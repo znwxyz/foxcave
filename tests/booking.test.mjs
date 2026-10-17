@@ -116,7 +116,7 @@ test('one deployment switches real-domain bookings between test and production w
   assert.equal(env.get({ action: 'slots', month: '2026-10' }).slots[0].isAvailable, false);
   env.run('useProductionRecipient');
   assert.equal(env.get({ action: 'health' }).mode, 'PRODUCTION');
-  assert.equal(env.post(booking({ origin: 'https://www.xn--bf0b077b2qa.com', slotId: '2026-10-21T19:00:00+09:00' })).ok, true);
+  assert.equal(env.post(booking({ origin: 'https://www.xn--bf0b077b2qa.com', slotId: '2026-10-25T19:00:00+09:00' })).ok, true);
   assert.equal(env.mail[1].to, 'replate.kr@gmail.com,foxcavebrew@naver.com');
   assert.equal(env.requests()[0][18], 'replate.kr@gmail.com');
   assert.equal(env.properties.DAILY_EVENING_ENABLED, 'true'); assert.equal(env.creates, 1);
@@ -212,17 +212,23 @@ test('diagnostic email always goes to the test account and creates no reservatio
   assert.equal(env.get({ action: 'slots', month: '2026-10' }).slots[0].isAvailable, true);
 });
 
-test('enabled daily schedule starts October 19, has no end date, and handles leap years without sheet growth', () => {
-  const env = createHarness(); env.setup(); env.run('enableDailyEveningSchedule');
+test('weekly schedule offers four 90-minute starts on Sunday, Monday and Tuesday from October 19 without an end date', () => {
+  const env = createHarness(); env.setup(); env.run('enableWeeklyEveningSchedule');
   const october = env.get({ action: 'slots', month: '2026-10' }).slots;
-  assert.equal(october.length, 13);
+  assert.equal(october.length, 20);
   assert.equal(october[0].start, '2026-10-19T19:00:00+09:00');
-  assert.equal(october[12].start, '2026-10-31T19:00:00+09:00');
-  assert.ok(october.every((slot) => slot.duration === 60 && slot.maxParty === 2 && slot.isAvailable));
+  assert.equal(october.at(-1).start, '2026-10-27T20:30:00+09:00');
+  assert.deepEqual([...new Set(october.map((slot) => slot.start.slice(0, 10)))], ['2026-10-19', '2026-10-20', '2026-10-25', '2026-10-26', '2026-10-27']);
+  assert.deepEqual(october.slice(0, 4).map((slot) => slot.start.slice(11, 16)), ['19:00', '19:30', '20:00', '20:30']);
+  assert.ok(october.every((slot) => slot.duration === 90 && slot.maxParty === 2 && slot.isAvailable));
   assert.equal(env.get({ action: 'slots', month: '2026-09' }).slots.length, 0);
-  for (const [month, count] of [['2026-11', 30], ['2027-02', 28], ['2028-02', 29], ['2100-02', 28], ['2100-12', 31]]) {
-    assert.equal(env.get({ action: 'slots', month }).slots.length, count, month);
+  for (const [month, count] of [['2026-11', 56], ['2027-02', 48], ['2028-02', 52], ['2100-02', 48], ['2100-12', 48]]) {
+    const slots = env.get({ action: 'slots', month }).slots;
+    assert.equal(slots.length, count, month);
+    assert.ok(slots.every((slot) => [0, 1, 2].includes(new Date(slot.start).getUTCDay())));
+    assert.equal(new Set(slots.map((slot) => slot.id)).size, count);
   }
+  assert.equal(env.get({ action: 'slots', month: '2028-02' }).slots.at(-1).start, '2028-02-29T20:30:00+09:00');
   assert.equal(env.book.getSheetByName('수업 일정').data.length, 1);
   assert.equal(env.requests().length, 0); assert.equal(env.mail.length, 0);
 });
@@ -230,67 +236,114 @@ test('enabled daily schedule starts October 19, has no end date, and handles lea
 test('recurrence activation and setup preserve existing schedules, reservations and recipient mode; disabling retains manual slots', () => {
   const env = ready(); env.post(booking()); env.run('useProductionRecipient');
   const before = structuredClone(env.book.getSheetByName('수업 일정').data);
-  env.run('enableDailyEveningSchedule'); env.run('enableDailyEveningSchedule'); env.setup();
+  env.run('enableWeeklyEveningSchedule'); env.run('enableWeeklyEveningSchedule'); env.setup();
   assert.equal(env.properties.DELIVERY_MODE, 'PRODUCTION');
-  assert.equal(env.get({ action: 'slots', month: '2026-10' }).slots.length, 14);
+  assert.equal(env.get({ action: 'slots', month: '2026-10' }).slots.length, 20);
   assert.deepEqual(env.book.getSheetByName('수업 일정').data, before);
   assert.equal(env.requests().length, 1); assert.equal(env.mail.length, 1);
-  env.run('disableDailyEveningSchedule');
+  env.run('disableWeeklyEveningSchedule');
   const slots = env.get({ action: 'slots', month: '2026-10' }).slots;
   assert.equal(slots.length, 1); assert.equal(slots[0].isAvailable, false);
 });
 
-test('manual overrides close a recurring date or adjust its duration and party limit without duplicate slots', () => {
-  const env = createHarness(); env.setup(); env.run('enableDailyEveningSchedule');
-  env.book.getSheetByName('수업 일정').data.push(['2026-10-19', '19:00', 60, 2, false], ['2026-10-20', '19:00', 120, 1, true]);
+test('existing activation property and old function names use the new weekly schedule without resetting data', () => {
+  const env = createHarness(); env.setup();
+  env.properties.DAILY_EVENING_ENABLED = 'true';
+  assert.equal(env.get({ action: 'slots', month: '2026-10' }).slots.length, 20);
+  env.run('disableDailyEveningSchedule');
+  assert.equal(env.get({ action: 'slots', month: '2026-10' }).slots.length, 0);
+  env.run('enableDailyEveningSchedule');
+  assert.ok(env.get({ action: 'slots', month: '2026-10' }).slots.every((slot) => slot.duration === 90));
+  assert.equal(env.properties.DELIVERY_MODE, 'TEST');
+  assert.equal(env.requests().length, 0); assert.equal(env.mail.length, 0);
+});
+
+test('existing 60-minute receipts keep their agreed duration when weekly generation is enabled', () => {
+  const env = createHarness(); env.setup();
+  const sheet = env.book.getSheetByName('수업 일정');
+  sheet.data.push(['2026-10-19', '19:00', 60, 2, true]);
+  const input = booking({ slotId: '2026-10-19T19:00:00+09:00' });
+  const original = env.post(input);
+  assert.equal(original.receipt.duration, 60);
+  sheet.data.pop(); env.run('enableWeeklyEveningSchedule');
+  assert.equal(env.get({ action: 'slots', month: '2026-10' }).slots[0].duration, 90);
+  assert.deepEqual(env.post(input), original);
+  assert.equal(env.requests()[0][3], 60);
+  assert.equal(env.requests().length, 1); assert.equal(env.mail.length, 1);
+  // The operator can explicitly extend the saved booking after agreeing with the customer.
+  env.requests()[0][3] = 90;
+  const slots = env.get({ action: 'slots', month: '2026-10' }).slots.filter((slot) => slot.start.startsWith('2026-10-19'));
+  assert.deepEqual(slots.filter((slot) => slot.isAvailable).map((slot) => slot.start.slice(11, 16)), ['20:30']);
+});
+
+test('manual overrides close individual starts or adjust duration and party limit without duplicate slots', () => {
+  const env = createHarness(); env.setup(); env.run('enableWeeklyEveningSchedule');
+  env.book.getSheetByName('수업 일정').data.push(['2026-10-19', '19:00', 90, 2, false], ['2026-10-20', '19:00', 120, 1, true]);
   const slots = env.get({ action: 'slots', month: '2026-10' }).slots;
-  assert.equal(slots.length, 13); assert.equal(slots[0].isAvailable, false);
+  assert.equal(slots.length, 20); assert.equal(slots[0].isAvailable, false);
+  assert.ok(slots.slice(1, 4).every((slot) => slot.isAvailable));
   assert.equal(env.post(booking({ slotId: slots[0].id })).code, 'SLOT_CLOSED');
-  assert.equal(slots[1].duration, 120); assert.equal(slots[1].maxParty, 1);
-  assert.equal(env.post(booking({ slotId: slots[1].id })).code, 'PARTY_LIMIT');
-  assert.equal(env.post(booking({ slotId: slots[1].id, party: 1 })).receipt.duration, 120);
+  const adjusted = slots.find((slot) => slot.id === '2026-10-20T19:00:00+09:00');
+  assert.equal(adjusted.duration, 120); assert.equal(adjusted.maxParty, 1);
+  assert.equal(env.post(booking({ slotId: adjusted.id })).code, 'PARTY_LIMIT');
+  assert.equal(env.post(booking({ slotId: adjusted.id, party: 1 })).receipt.duration, 120);
+});
+
+test('closing all four manual overrides closes the day; deleting an override restores only that start', () => {
+  const env = createHarness(); env.setup(); env.run('enableWeeklyEveningSchedule');
+  const sheet = env.book.getSheetByName('수업 일정');
+  for (const time of ['19:00', '19:30', '20:00', '20:30']) env.addSlot('2026-10-19', time, 2, false);
+  const daySlots = () => env.get({ action: 'slots', month: '2026-10' }).slots.filter((slot) => slot.start.startsWith('2026-10-19'));
+  assert.ok(daySlots().every((slot) => !slot.isAvailable));
+  sheet.data.pop();
+  assert.deepEqual(daySlots().filter((slot) => slot.isAvailable).map((slot) => slot.start.slice(11, 16)), ['20:30']);
 });
 
 test('recurring slots can be booked directly; invented times, dates and excess party sizes are refused', () => {
-  const env = createHarness(); env.setup(); env.run('enableDailyEveningSchedule');
-  for (const slotId of ['2026-10-18T19:00:00+09:00', '2026-10-19T19:30:00+09:00', '2027-02-30T19:00:00+09:00', 'fake']) {
+  const env = createHarness(); env.setup(); env.run('enableWeeklyEveningSchedule');
+  for (const slotId of ['2026-10-18T19:00:00+09:00', '2026-10-19T18:30:00+09:00', '2026-10-19T21:00:00+09:00', '2026-10-19T19:15:00+09:00', '2026-10-21T19:00:00+09:00', '2026-10-24T20:30:00+09:00', '2027-02-30T19:00:00+09:00', 'fake']) {
     assert.equal(env.post(booking({ slotId })).ok, false);
   }
   const input = booking({ slotId: '2026-10-19T19:00:00+09:00' });
   assert.equal(env.post({ ...input, party: 3 }).code, 'PARTY_LIMIT');
-  const first = env.post(input); assert.equal(first.ok, true); assert.equal(first.receipt.duration, 60);
+  const first = env.post(input); assert.equal(first.ok, true); assert.equal(first.receipt.duration, 90);
   assert.deepEqual(env.post(input), first);
   assert.equal(env.post(booking({ slotId: input.slotId })).code, 'SLOT_CLOSED');
   assert.equal(env.requests().length, 1); assert.equal(env.mail.length, 1);
   assert.equal(env.get({ action: 'slots', month: '2026-10' }).slots[0].isAvailable, false);
 });
 
-test('a 19:00 daily booking and an overlapping 19:30 manual booking exclude each other until cancelled', () => {
-  for (const firstTime of ['19:00', '19:30']) {
-    const env = ready(); env.run('enableDailyEveningSchedule');
+test('each 90-minute booking closes only overlapping starts, including pending and confirmed bookings', () => {
+  const expected = { '19:00': ['20:30'], '19:30': [], '20:00': [], '20:30': ['19:00'] };
+  for (const [firstTime, remaining] of Object.entries(expected)) {
+    const env = createHarness(); env.setup(); env.run('enableWeeklyEveningSchedule');
     const input = booking({ slotId: `2026-10-20T${firstTime}:00+09:00` });
     assert.equal(env.post(input).ok, true);
-    const daySlots = env.get({ action: 'slots', month: '2026-10' }).slots.filter((slot) => slot.start.startsWith('2026-10-20'));
-    assert.equal(daySlots.length, 2); assert.ok(daySlots.every((slot) => !slot.isAvailable));
-    for (const slot of daySlots) assert.equal(env.post(booking({ slotId: slot.id })).code, 'SLOT_CLOSED');
+    const daySlots = () => env.get({ action: 'slots', month: '2026-10' }).slots.filter((slot) => slot.start.startsWith('2026-10-20'));
+    assert.equal(daySlots().length, 4);
+    assert.deepEqual(daySlots().filter((slot) => slot.isAvailable).map((slot) => slot.start.slice(11, 16)), remaining);
+    for (const slot of daySlots().filter((slot) => !slot.isAvailable)) assert.equal(env.post(booking({ slotId: slot.id })).code, 'SLOT_CLOSED');
     env.requests()[0][10] = '예약 확정';
-    assert.ok(env.get({ action: 'slots', month: '2026-10' }).slots.filter((slot) => slot.start.startsWith('2026-10-20')).every((slot) => !slot.isAvailable));
+    assert.deepEqual(daySlots().filter((slot) => slot.isAvailable).map((slot) => slot.start.slice(11, 16)), remaining);
     for (const state of ['취소', '진행 불가']) {
       env.requests()[0][10] = state;
-      assert.ok(env.get({ action: 'slots', month: '2026-10' }).slots.filter((slot) => slot.start.startsWith('2026-10-20')).every((slot) => slot.isAvailable));
+      assert.ok(daySlots().every((slot) => slot.isAvailable));
     }
     assert.equal(env.requests().length, 1); assert.equal(env.mail.length, 1);
   }
 });
 
-test('adjacent classes remain open when a recurring class ends exactly at their start', () => {
-  const env = createHarness(); env.setup(); env.run('enableDailyEveningSchedule');
-  env.book.getSheetByName('수업 일정').data.push(['2026-10-19', '18:00', 60, 2, true], ['2026-10-19', '20:00', 60, 2, true]);
-  assert.equal(env.post(booking({ slotId: '2026-10-19T19:00:00+09:00' })).ok, true);
-  const slots = env.get({ action: 'slots', month: '2026-10' }).slots.filter((slot) => slot.start.startsWith('2026-10-19'));
-  assert.deepEqual(slots.map((slot) => slot.isAvailable), [true, false, true]);
-  assert.equal(env.post(booking({ slotId: slots[0].id })).ok, true);
-  assert.equal(env.post(booking({ slotId: slots[2].id })).ok, true);
+test('19:00 and 20:30 bookings coexist in either order and cancellation respects the other booking', () => {
+  for (const times of [['19:00', '20:30'], ['20:30', '19:00']]) {
+    const env = createHarness(); env.setup(); env.run('enableWeeklyEveningSchedule');
+    for (const time of times) assert.equal(env.post(booking({ slotId: `2026-10-19T${time}:00+09:00` })).ok, true);
+    const daySlots = () => env.get({ action: 'slots', month: '2026-10' }).slots.filter((slot) => slot.start.startsWith('2026-10-19'));
+    assert.ok(daySlots().every((slot) => !slot.isAvailable));
+    assert.equal(env.requests().length, 2); assert.equal(env.mail.length, 2);
+    assert.ok(env.requests().every((row) => row[3] === 90));
+    env.requests()[0][10] = '취소';
+    assert.deepEqual(daySlots().filter((slot) => slot.isAvailable).map((slot) => slot.start.slice(11, 16)), [times[0]]);
+  }
 });
 
 test('occupied intervals are checked across midnight and month boundaries', () => {

@@ -12,6 +12,9 @@ submitButton.disabled = true;
 // Slot timestamps include +09:00, so this also works outside Korea.
 const isUpcoming = (slot) => Date.parse(slot.start) > Date.now();
 const emptyMonthMessage = '이번 달에 열린 일정이 없어요. 다음 달을 보거나 희망 날짜를 문의해 주세요.';
+const endTime = (slot) => new Intl.DateTimeFormat('ko-KR', {
+  timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+}).format(new Date(Date.parse(slot.start) + slot.duration * 60000));
 function clearSelection() {
   state.selectedSlot = null;
   form.elements.slotId.value = '';
@@ -39,9 +42,9 @@ function dayButton(date, number) {
   button.classList.toggle('has-slot', available);
   button.classList.toggle('is-selected', state.selectedDay === date);
   button.setAttribute('aria-pressed', String(state.selectedDay === date));
-  button.setAttribute('aria-label', `${date}, ${available ? '신청 가능' : slots.length ? '마감' : '열린 일정 없음'}`);
+  button.setAttribute('aria-label', `${date}, ${available ? '신청 가능' : '마감'}`);
   button.dataset.date = date;
-  button.append(makeElement('small', available ? '신청 가능' : slots.length ? '마감' : '—'));
+  button.append(makeElement('small', available ? '신청 가능' : '마감'));
   button.addEventListener('click', () => {
     if (state.submitting || state.completed || state.pendingValues) return;
     if (state.selectedDay !== date) clearSelection();
@@ -72,7 +75,7 @@ function selectSlot(slot) {
   const oldParty = Number(form.elements.party.value);
   form.elements.party.replaceChildren(...options);
   form.elements.party.value = String(Math.min(oldParty, slot.maxParty));
-  document.querySelector('#selected-slot').textContent = `${dateLabel(slot.start)} · ${slot.duration}분 · 한 팀 진행`;
+  document.querySelector('#selected-slot').textContent = `${dateLabel(slot.start)}~${endTime(slot)} · ${slot.duration}분 · 한 팀 진행`;
   renderPrice(); renderSlots();
 }
 function renderSlots() {
@@ -86,7 +89,7 @@ function renderSlots() {
     button.classList.toggle('is-selected', state.selectedSlot?.id === slot.id);
     button.setAttribute('aria-pressed', String(state.selectedSlot?.id === slot.id));
     button.disabled = !slot.isAvailable;
-    const title = makeElement('span', slot.start.slice(11, 16));
+    const title = makeElement('span', `${slot.start.slice(11, 16)}~${endTime(slot)}`);
     title.append(makeElement('small', `${slot.duration}분 · 최대 ${slot.maxParty}명 · 한 팀 진행`));
     button.append(title, makeElement('span', slot.isAvailable ? '이 시간 선택' : '마감'));
     button.addEventListener('click', () => selectSlot(slot)); return button;
@@ -157,7 +160,7 @@ form.addEventListener('submit', async (event) => {
     renderCalendar(); renderSlots();
     message.textContent = '신청하신 시간대는 접수가 마감되었습니다. 확인 연락 후 예약이 확정됩니다.';
     const confirmation = document.querySelector('#booking-confirmation');
-    document.querySelector('#receipt-details').textContent = `${dateLabel(receipt.start)} · ${receipt.duration}분 · ${receipt.party}명`;
+    document.querySelector('#receipt-details').textContent = `${dateLabel(receipt.start)}~${endTime(receipt)} · ${receipt.duration}분 · ${receipt.party}명`;
     document.querySelector('#receipt-number').textContent = receipt.id;
     form.hidden = true;
     confirmation.hidden = false;

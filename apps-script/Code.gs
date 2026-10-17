@@ -16,7 +16,11 @@ const FC = Object.freeze({
   DAILY_LIMIT: 80,
   PHONE_DAILY_LIMIT: 3,
   MAX_MAIL_ATTEMPTS: 3,
-  DAILY_EVENING: Object.freeze({ startDate: '2026-10-19', time: '19:00', duration: 60, maxParty: 2 }),
+  WEEKLY_EVENING: Object.freeze({
+    startDate: '2026-10-19', weekdays: Object.freeze([0, 1, 2]),
+    times: Object.freeze(['19:00', '19:30', '20:00', '20:30']), duration: 90, maxParty: 2,
+  }),
+  SCHEDULE_NOTE: '자동 일정은 일·월·화 19:00 / 19:30 / 20:00 / 20:30 시작, 각 90분입니다. 같은 날짜·시작 시간의 수동 행이 우선합니다. 하루를 쉬려면 네 시간 모두 접수 열기를 해제하세요. 수동 행을 삭제하면 해당 시간의 자동 일정이 다시 적용됩니다.',
   HEADERS: ['접수번호', '접수일시', '수업일시', '소요시간 분', '인원', '이름', '휴대폰 번호', '유입 경로', '요청사항', '개인정보 동의', '예약 상태', '메일 상태', '메일 발송일시', '메일 시도 횟수', '최근 메일 시도', '메일 오류', '중복 확인값', '발송 모드', '알림 수신자'],
   SLOT_HEADERS: ['날짜 YYYY-MM-DD', '시작 시간 HH:mm', '소요시간 분', '최대 인원', '접수 열기'],
 });
@@ -38,7 +42,7 @@ function setup() {
   const statusRule = SpreadsheetApp.newDataValidation().requireValueInList(['접수 대기', '예약 확정', '취소', '진행 불가'], true).setAllowInvalid(false).build();
   requests.getRange('K2:K1000').setDataValidation(statusRule);
   slots.getRange('E2:E1000').setDataValidation(SpreadsheetApp.newDataValidation().requireCheckbox().build());
-  slots.getRange('A1').setNote('직접 추가하거나 자동 일정을 조정할 날짜를 입력합니다. 예: 2026-11-07. 매일 19시 일정 활성화 중에는 같은 날짜·19:00 행이 자동 일정보다 우선하며, 접수 열기를 해제하면 그날은 쉽니다.');
+  slots.getRange('A1').setNote(FC.SCHEDULE_NOTE);
   requests.getRange('L1').setNote('발송 완료는 MailApp의 발송 처리 성공입니다. 받은편지함 도착 여부는 수신 메일함에서 확인합니다.');
   requests.getRange('Q1').setNote('중복 접수 방지용입니다. A열과 Q:S열은 수정하지 마세요.');
   if (!ScriptApp.getProjectTriggers().some((trigger) => trigger.getHandlerFunction() === 'retryPendingNotifications')) {
@@ -64,25 +68,29 @@ function useProductionRecipient() {
   console.log('앞으로 접수되는 신청의 알림 수신자: ' + productionRecipients_());
 }
 
-// 2026-10-19부터 종료일 없이 매일 한 팀. 월별 조회 시 생성하므로 시트에 무한히 행을 추가하지 않습니다.
-function enableDailyEveningSchedule() {
-  book_();
+// 2026-10-19부터 일·월·화, 종료일 없음. 기존 활성화 설정 키를 유지합니다.
+function enableWeeklyEveningSchedule() {
+  book_().getSheetByName(FC.SLOTS).getRange('A1').setNote(FC.SCHEDULE_NOTE);
   PropertiesService.getScriptProperties().setProperty('DAILY_EVENING_ENABLED', 'true');
-  console.log('매일 일정 활성화: 2026-10-19부터 19:00~20:00, 최대 2명, 한 팀. 종료일 없음.\n특정 날짜를 쉬려면 수업 일정에 해당 날짜 / 19:00 / 60 / 2를 입력하고 접수 열기를 해제하세요.');
+  console.log('주간 일정 활성화: 2026-10-19부터 일·월·화, 시작 19:00 / 19:30 / 20:00 / 20:30, 각 90분, 최대 2명·한 팀. 종료일 없음.\n19:00 예약 후 20:30 예약 가능, 19:30 또는 20:00 예약 후 해당 날짜 마감.\n수업 일정의 수동 행이 우선하므로 예전 60분 일정과 테스트 행을 확인하세요. 기존 신청과 이메일 모드는 유지됩니다.');
 }
 
-function disableDailyEveningSchedule() {
+function disableWeeklyEveningSchedule() {
   PropertiesService.getScriptProperties().setProperty('DAILY_EVENING_ENABLED', 'false');
-  console.log('매일 자동 일정 중지. 수업 일정 시트에 직접 등록한 일정은 그대로 유지됩니다.');
+  console.log('주간 자동 일정 중지. 수업 일정 시트에 직접 등록한 일정은 그대로 유지됩니다.');
 }
+
+// 이전 함수 이름도 같은 주간 일정 설정을 사용합니다.
+function enableDailyEveningSchedule() { enableWeeklyEveningSchedule(); }
+function disableDailyEveningSchedule() { disableWeeklyEveningSchedule(); }
 
 // 실제 발송 점검용. 항상 테스트 주소로만 보내고 예약 행은 추가하지 않습니다.
 function sendTestEmail() {
   const book = book_();
   const row = [];
   row[COL.ID] = 'TEST-EMAIL-ONLY'; row[COL.MODE] = 'TEST';
-  row[COL.START] = FC.DAILY_EVENING.startDate + 'T' + FC.DAILY_EVENING.time + ':00+09:00';
-  row[COL.DURATION] = FC.DAILY_EVENING.duration; row[COL.PARTY] = 2;
+  row[COL.START] = FC.WEEKLY_EVENING.startDate + 'T' + FC.WEEKLY_EVENING.times[0] + ':00+09:00';
+  row[COL.DURATION] = FC.WEEKLY_EVENING.duration; row[COL.PARTY] = 2;
   row[COL.NAME] = '메일 서식 테스트'; row[COL.PHONE] = '010-0000-0000';
   row[COL.CHANNEL] = '테스트'; row[COL.MESSAGE] = '항목명이 굵게 표시되는지 확인해 주세요.\n실제 예약이 아닌 가상 예시입니다.';
   MailApp.sendEmail(Object.assign({ to: FC.TEST_EMAIL, name: '여우굴 예약 알림' }, bookingEmail_(row, book.getUrl(), true)));
@@ -196,21 +204,25 @@ function readSlots_(book, month) {
     return { id: start, start: start, duration: duration, maxParty: maxParty, isOpen: String(row[4]).toUpperCase() === 'TRUE' };
   });
   // A manually entered date + start time overrides the recurring slot, including a closed checkbox.
-  const merged = new Map(dailyEveningSlots_(month).map((slot) => [slot.id, slot]));
+  const merged = new Map(weeklyEveningSlots_(month).map((slot) => [slot.id, slot]));
   manual.filter((slot) => slot.start.startsWith(month)).forEach((slot) => merged.set(slot.id, slot));
   return Array.from(merged.values()).sort((a, b) => a.start.localeCompare(b.start));
 }
 
-function dailyEveningSlots_(month) {
+function weeklyEveningSlots_(month) {
   if (PropertiesService.getScriptProperties().getProperty('DAILY_EVENING_ENABLED') !== 'true') return [];
-  const settings = FC.DAILY_EVENING;
+  const settings = FC.WEEKLY_EVENING;
   const slots = [];
   for (let day = 1; day <= 31; day++) {
     const dayString = month + '-' + ('0' + day).slice(-2);
-    const start = dayString + 'T' + settings.time + ':00+09:00';
-    const date = new Date(start);
-    if (dayString < settings.startDate || !Number.isFinite(date.getTime()) || date_(date, 'yyyy-MM-dd') !== dayString) continue;
-    slots.push({ id: start, start: start, duration: settings.duration, maxParty: settings.maxParty, isOpen: true });
+    // UTC midnight is used only to identify the weekday of this Korean calendar date.
+    const date = new Date(dayString + 'T00:00:00Z');
+    if (dayString < settings.startDate || !Number.isFinite(date.getTime()) || date.toISOString().slice(0, 10) !== dayString
+      || settings.weekdays.indexOf(date.getUTCDay()) < 0) continue;
+    settings.times.forEach((time) => {
+      const start = dayString + 'T' + time + ':00+09:00';
+      slots.push({ id: start, start: start, duration: settings.duration, maxParty: settings.maxParty, isOpen: true });
+    });
   }
   return slots;
 }

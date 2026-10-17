@@ -5,7 +5,7 @@ async (page) => {
   const passed = [];
   const errors = [];
   const assert = (value, message) => { if (!value) throw new Error(message); };
-  const slot = (start, isAvailable = true) => ({ id: start, start, duration: 60, maxParty: 2, isAvailable });
+  const slot = (start, isAvailable = true) => ({ id: start, start, duration: 90, maxParty: 2, isAvailable });
   const fixture = async (time, slots) => {
     const tab = await context.newPage();
     const requests = [];
@@ -24,7 +24,7 @@ async (page) => {
         }
         const values = JSON.parse(request.postData());
         await route.fulfill({ json: { service: 'foxcave-booking', version: 1, ok: true,
-          receipt: { id: values.requestId, status: 'received', start: values.slotId, duration: 60, party: values.party } } });
+          receipt: { id: values.requestId, status: 'received', start: values.slotId, duration: 90, party: values.party } } });
         return;
       }
       await route.fulfill({ json: { service: 'foxcave-booking', version: 1, ok: true, slots, updatedAt: time } });
@@ -50,14 +50,15 @@ async (page) => {
       slot('2026-10-20T21:00:00+09:00', false),
       slot('2026-10-21T19:00:00+09:00'),
     ]);
-    const yesterday = tab.getByRole('button', { name: '2026-10-19, 열린 일정 없음', exact: true });
-    assert(await yesterday.isDisabled() && await yesterday.locator('small').textContent() === '—', 'Past days must show a disabled dash');
+    const yesterday = tab.getByRole('button', { name: '2026-10-19, 마감', exact: true });
+    assert(await yesterday.isDisabled() && await yesterday.locator('small').textContent() === '마감', 'Past days must show closed');
+    assert(await tab.getByRole('button', { name: '2026-10-22, 마감', exact: true }).isDisabled(), 'Dates without any schedule must also show closed');
     await tab.getByRole('button', { name: '2026-10-20, 마감', exact: true }).click();
     assert(await tab.locator('.fc-slot-option').count() === 1, 'Past and exactly-starting slots must be hidden');
     assert((await tab.locator('.fc-slot-option').textContent()).includes('21:00'), 'Future booked time must remain visible');
     assert(await tab.locator('.fc-slot-option').isDisabled(), 'Future booked time must remain closed');
     assert(await tab.getByRole('button', { name: '2026-10-21, 신청 가능', exact: true }).isEnabled(), 'Future open dates must remain available');
-    passed.push('past dates and elapsed times are hidden; future bookings stay closed in a non-Korean browser timezone');
+    passed.push('past dates and days off show closed; elapsed times are hidden and future bookings stay closed outside Korea');
     await tab.close();
 
     ({ tab } = await fixture('2026-11-01T00:00:00+09:00', [slot('2026-11-01T19:00:00+09:00')]));
@@ -70,7 +71,7 @@ async (page) => {
     await choose(tab); await fill(tab);
     const reads = fixtureState.requests.length;
     await tab.clock.runFor(1000);
-    assert(await tab.getByRole('button', { name: '2026-10-20, 열린 일정 없음', exact: true }).isDisabled(), 'At the exact start, the last time disappears without a reload');
+    assert(await tab.getByRole('button', { name: '2026-10-20, 마감', exact: true }).isDisabled(), 'At the exact start, the last time disappears without a reload');
     assert(await tab.locator('[name=slotId]').inputValue() === '', 'Expired selection must be cleared');
     assert(await tab.locator('#booking-form [type=submit]').isDisabled(), 'A month with no remaining availability must disable submission');
     assert(await tab.locator('#form-error').textContent() === '선택한 수업의 시작 시간이 지났어요. 다른 일정을 선택해 주세요.', 'Explain why a selected time was cleared');
