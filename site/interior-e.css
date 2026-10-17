@@ -265,3 +265,17 @@
   .fc-admin .fc-admin-request h3 { font-size: 15px; }
   .fc-not-found { padding-bottom: 60px; }
 }
+
+/* FAQ 분류 구획 */
+.fc-faq-jump { display: grid; gap: 2px; margin: 18px 0 14px; border-top: 1px solid var(--fc-line); padding-top: 14px; }
+.fc-faq-jump a { display: flex; justify-content: space-between; align-items: center; padding: 9px 2px; font-size: 12px; color: var(--fc-ink); text-decoration: none; border-bottom: 1px solid transparent; transition: color .15s ease, border-color .15s ease; }
+.fc-faq-jump a span { font-size: 11px; color: var(--fc-muted); }
+.fc-faq-jump a:hover, .fc-faq-jump a:focus-visible { color: var(--fc-accent); border-bottom-color: var(--fc-accent); }
+.fc-faq-group { scroll-margin-top: 96px; }
+.fc-faq-group + .fc-faq-group { margin-top: 44px; }
+.fc-faq-group > h2 { margin: 0 0 14px; padding-bottom: 12px; border-bottom: 1px solid var(--fc-ink); font-size: 17px; font-weight: 400; letter-spacing: -.01em; }
+.fc-faq-group[hidden] { display: none; }
+@media (max-width: 900px) {
+  .fc-faq-jump { display: flex; flex-wrap: wrap; gap: 8px; }
+  .fc-faq-jump a { gap: 6px; padding: 7px 12px; border: 1px solid var(--fc-line); border-radius: 999px; white-space: nowrap; }
+}

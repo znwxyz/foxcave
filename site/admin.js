@@ -18,7 +18,7 @@ function requestCard(request) {
   const card = makeElement('article', '', 'fc-admin-request');
   card.dataset.requestId = request.id;
   card.append(makeElement('span', LABELS[request.status], 'fc-admin-tag'),
-    makeElement('h3', `${request.name} · ${request.party}명 · ${request.kind === 'class' ? '원데이클래스' : request.kind === 'lecture' ? '외부 강의' : '일반 문의'}`));
+    makeElement('h3', `${request.name} · ${request.party}명 · ${request.kind === 'class' ? '원데이클래스' : request.kind === 'lecture' ? '기업·기관 강의' : '일반 문의'}`));
   const phone = makeElement('a', request.phone); phone.href = `tel:${request.phone}`;
   const contact = makeElement('p'); contact.append(phone);
   card.append(contact, makeElement('p', request.start ? dateLabel(request.start) : `희망일: ${request.desiredDate || '미정'} · 기관: ${request.organization || '미기재'}`));

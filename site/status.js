@@ -10,11 +10,11 @@ const DETAILS = { pending: '아직 예약 확정 전입니다. 신청 내용을 
   confirmed: '확인된 일정에 맞춰 방문해 주세요. 변경이 필요하면 전화로 알려 주세요.',
   cancelled: '신청 진행이 중단되었습니다. 다른 일정은 다시 신청할 수 있어요.',
   declined: '다른 날짜를 선택하거나 전화로 일정을 의논해 주세요.',
-  contacted: '외부 강의와 기타 문의의 최종 일정·비용은 담당자와 나눈 안내를 확인해 주세요.' };
+  contacted: '기업·기관 강의와 기타 문의의 최종 일정·비용은 담당자와 나눈 안내를 확인해 주세요.' };
 async function refresh() {
   try {
     const request = await api('/api/request', { headers: HEADERS });
-    node.replaceChildren(makeElement('span', request.kind === 'class' ? '원데이클래스' : '외부 강의 · 문의', 'fc-pill'),
+    node.replaceChildren(makeElement('span', request.kind === 'class' ? '원데이클래스' : '기업·기관 강의 · 문의', 'fc-pill'),
       makeElement('h2', LABELS[request.status]), makeElement('p', DETAILS[request.status]),
       makeElement('p', request.start ? `${dateLabel(request.start)} · ${request.duration}분 · ${request.party}명` : `예상 참여 인원 ${request.party}명`),
       makeElement('p', `접수 번호 ${request.id.slice(0, 8)}`, 'fc-fine'));
