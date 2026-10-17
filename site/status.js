@@ -1,4 +1,4 @@
-import { api, dateLabel, makeElement } from './common.js';
+import { api, dateLabel, makeElement } from './common.js?v=20261017b';
 
 const token = location.hash.slice(1);
 const node = document.querySelector('#request-status');

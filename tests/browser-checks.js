@@ -29,6 +29,34 @@ async (page) => {
   };
   const submit = (target = page) => target.locator('#booking-form [type=submit]').click();
   const success = (target = page) => target.locator('#booking-confirmation').waitFor({ state: 'visible' });
+  const returnToBooking = async () => {
+    const before = await data();
+    const receipt = await page.locator('#receipt-number').textContent();
+    const slot = await page.locator('.fc-slot-option.is-selected').getAttribute('data-slot-id');
+    const back = page.getByRole('link', { name: '예약 화면으로 돌아가기' });
+    const kakao = page.locator('#booking-confirmation').getByRole('link', { name: /카카오톡으로 문의하기/ });
+    const [backBox, kakaoBox] = await Promise.all([back.boundingBox(), kakao.boundingBox()]);
+    assert(backBox.y >= kakaoBox.y + kakaoBox.height, 'Return button must appear below Kakao contact');
+    await page.locator('.fc-chat-toggle').click();
+    assert(await page.locator('#chat-panel').isVisible(), 'Floating chat works after booking completion');
+    await page.keyboard.press('Escape');
+    await back.click();
+    await page.locator('#booking-form').waitFor({ state: 'visible' });
+    await page.waitForFunction(() => document.querySelector('#calendar-message').textContent.length > 0);
+    assert(await page.locator('#booking-confirmation').isHidden(), 'Return must exit the completed state');
+    assert(await page.getByRole('textbox', { name: '이름 필수' }).inputValue() === '', 'Return opens an empty form');
+    if (!await page.locator(`[data-date="${slot.slice(0, 10)}"]`).count()) {
+      await page.getByRole('button', { name: '다음 달', exact: true }).click();
+    }
+    await page.locator(`[data-date="${slot.slice(0, 10)}"].has-slot`).click();
+    assert(await page.locator(`[data-slot-id="${slot}"]`).isDisabled(), 'Returning keeps the accepted slot closed');
+    await page.locator('.fc-slot-option:not(:disabled)').first().click();
+    assert(await page.locator('[name=slotId]').inputValue() !== '', 'Calendar and time selection work after returning');
+    const after = await data();
+    assert(JSON.stringify(after.rows) === JSON.stringify(before.rows) && after.rows.some((row) => row[0] === receipt), 'Returning must preserve the saved reservation');
+    assert(after.mails.length === before.mails.length, 'Returning must not send another email');
+    assert(after.requests.filter((request) => request.method === 'POST').length === before.requests.filter((request) => request.method === 'POST').length, 'Return must not resubmit the form');
+  };
 
   await reset({ missingConfig: true });
   await page.getByText(/온라인 예약을 준비하고 있어요/).waitFor();
@@ -67,6 +95,8 @@ async (page) => {
   assert(await page.locator('.fc-slot-option.is-selected').isDisabled(), 'Accepted slot must close immediately on the same page');
   await page.locator('#booking-confirmation').screenshot({ path: 'output/playwright/booking-success-desktop.png' });
   passed.push('desktop submission, cross-origin redirect, duplicate-click protection and matching receipt');
+  await returnToBooking();
+  passed.push('desktop return below Kakao preserves the reservation and reactivates the booking form');
 
   await reset({ mode: 'disconnect-after-save' });
   await choose(); await fill(); await submit();
@@ -129,6 +159,8 @@ async (page) => {
   await page.locator('#booking-confirmation').screenshot({ path: 'output/playwright/booking-success-mobile.png' });
   assert(errors.length === 0, 'Unexpected browser JavaScript errors: ' + errors.join(', '));
   passed.push('mobile form and confirmation at 390px without horizontal overflow');
+  await returnToBooking();
+  passed.push('mobile return below Kakao preserves the reservation and reactivates the booking form');
 
   await reset({ mode: 'weekly' });
   await page.setViewportSize({ width: 1440, height: 1000 });
@@ -153,7 +185,7 @@ async (page) => {
   state = await data();
   assert(state.rows.length === 1 && state.mails.length === 1, 'Weekly slot saves and emails once');
   assert(state.mails[0].htmlBody.includes('<strong style="font-weight:700">접수번호:</strong>'), 'Booking notification includes HTML labels');
-  await page.reload();
+  await page.getByRole('link', { name: '예약 화면으로 돌아가기' }).click();
   await page.locator('.fc-calendar-day.has-slot').first().waitFor();
   await page.locator(`[data-date="${selectedDate}"]`).click();
   assert(await page.locator(`[data-slot-id="${weeklySlot}"]`).isDisabled(), 'New visitors see the occupied 19:00 slot closed');
@@ -164,7 +196,8 @@ async (page) => {
   assert((await page.locator('#receipt-details').textContent()).includes('22:00'), 'Late receipt shows the 22:00 finish');
   state = await data();
   assert(state.rows.length === 2 && state.mails.length === 2, 'Two adjacent teams are accepted and emailed once each');
-  await page.reload();
+  assert(state.rows[0][0] !== state.rows[1][0], 'A new booking after returning receives its own receipt');
+  await page.getByRole('link', { name: '예약 화면으로 돌아가기' }).click();
   await page.locator('.fc-calendar-day.has-slot').first().waitFor();
   const oldMonth = await page.locator('#calendar-month').textContent();
   await page.getByRole('button', { name: '다음 달', exact: true }).click();

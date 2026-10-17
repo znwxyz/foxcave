@@ -1,6 +1,7 @@
 .fc-booking-trap { position: absolute !important; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
 .fc-booking-confirmation h2 { margin-block: 20px !important; }
 .fc-booking-confirmation p { margin-block: 18px; font-size: 13px; }
-.fc-booking-confirmation .fc-button { margin-top: 18px; }
+.fc-booking-confirmation-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-top: 36px; }
+.fc-booking-confirmation-actions .fc-button { max-width: 100%; }
 .fc-booking-confirmation #receipt-number { overflow-wrap: anywhere; }
 .fc-booking-layout .fc-submit:disabled { opacity: .6; }

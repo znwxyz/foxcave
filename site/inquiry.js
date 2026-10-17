@@ -1,4 +1,4 @@
-import { api, formValue, showError } from './common.js';
+import { api, formValue, showError } from './common.js?v=20261017b';
 
 const form = document.querySelector('#inquiry-form');
 const errorNode = document.querySelector('#form-error');
