@@ -6,7 +6,7 @@ const grid = document.querySelector('#calendar-grid');
 const slotArea = document.querySelector('#day-slots');
 const message = document.querySelector('#calendar-message');
 const errorNode = document.querySelector('#form-error');
-const state = { month: currentMonth(), slots: [], selectedDay: null, selectedSlot: null, requestNumber: 0, submitting: false, completed: false, pendingValues: null };
+const state = { month: currentMonth(), slots: [], selectedDay: null, selectedSlot: null, scheduleStatus: 'idle', requestNumber: 0, submitting: false, completed: false, pendingValues: null };
 const submitButton = form.querySelector('[type=submit]');
 submitButton.disabled = true;
 // Slot timestamps include +09:00, so this also works outside Korea.
@@ -22,7 +22,7 @@ function clearSelection() {
 }
 function expireSlots() {
   // An uncertain submission must keep its original values for receipt recovery.
-  if (state.submitting || state.completed || state.pendingValues) return;
+  if (state.scheduleStatus !== 'ready' || state.submitting || state.completed || state.pendingValues) return;
   const upcoming = state.slots.filter(isUpcoming);
   if (upcoming.length === state.slots.length) return;
   state.slots = upcoming;
@@ -35,18 +35,20 @@ function expireSlots() {
   renderCalendar(); renderSlots();
 }
 function dayButton(date, number) {
+  const ready = state.scheduleStatus === 'ready';
   const slots = state.slots.filter((slot) => slot.start.startsWith(date));
-  const available = slots.some((slot) => slot.isAvailable);
+  const available = ready && slots.some((slot) => slot.isAvailable);
+  const status = ready ? (available ? '신청 가능' : '마감') : (state.scheduleStatus === 'error' ? '일정 확인 필요' : '일정 확인 중');
   const button = makeElement('button', String(number), 'fc-calendar-day');
-  button.type = 'button'; button.disabled = slots.length === 0;
+  button.type = 'button'; button.disabled = !ready || slots.length === 0;
   button.classList.toggle('has-slot', available);
-  button.classList.toggle('is-selected', state.selectedDay === date);
-  button.setAttribute('aria-pressed', String(state.selectedDay === date));
-  button.setAttribute('aria-label', `${date}, ${available ? '신청 가능' : '마감'}`);
+  button.classList.toggle('is-selected', ready && state.selectedDay === date);
+  button.setAttribute('aria-pressed', String(ready && state.selectedDay === date));
+  button.setAttribute('aria-label', `${date}, ${status}`);
   button.dataset.date = date;
-  button.append(makeElement('small', available ? '신청 가능' : '마감'));
+  button.append(makeElement('small', ready ? status : ''));
   button.addEventListener('click', () => {
-    if (state.submitting || state.completed || state.pendingValues) return;
+    if (state.scheduleStatus !== 'ready' || state.submitting || state.completed || state.pendingValues) return;
     if (state.selectedDay !== date) clearSelection();
     state.selectedDay = date; renderCalendar(); renderSlots();
   });
@@ -54,9 +56,16 @@ function dayButton(date, number) {
 }
 function renderCalendar() {
   const focusedDate = document.activeElement?.dataset.date;
+  const loading = state.scheduleStatus === 'loading';
+  document.querySelector('#calendar-stage').dataset.state = state.scheduleStatus;
+  grid.setAttribute('aria-busy', String(loading));
+  document.querySelector('#calendar-loading').hidden = !loading;
+  document.querySelector('#calendar-unavailable').hidden = state.scheduleStatus !== 'error';
+  document.querySelector('#calendar-retry').disabled = loading;
   const [year, month] = state.month.split('-').map(Number);
   document.querySelector('#calendar-month').textContent = `${year}년 ${month}월`;
-  document.querySelector('#month-prev').disabled = state.month <= currentMonth();
+  document.querySelector('#month-prev').disabled = loading || state.month <= currentMonth();
+  document.querySelector('#month-next').disabled = loading;
   const weekday = new Date(Date.UTC(year, month - 1, 1)).getUTCDay();
   const count = new Date(Date.UTC(year, month, 0)).getUTCDate();
   const cells = Array.from({ length: weekday }, () => makeElement('span'));
@@ -65,7 +74,7 @@ function renderCalendar() {
   if (focusedDate) grid.querySelector(`[data-date="${focusedDate}"]`)?.focus({ preventScroll: true });
 }
 function selectSlot(slot) {
-  if (state.submitting || state.completed || state.pendingValues) return;
+  if (state.scheduleStatus !== 'ready' || state.submitting || state.completed || state.pendingValues) return;
   if (!isUpcoming(slot)) { expireSlots(); return; }
   state.selectedSlot = slot;
   form.elements.slotId.value = slot.id;
@@ -79,6 +88,11 @@ function selectSlot(slot) {
   renderPrice(); renderSlots();
 }
 function renderSlots() {
+  if (state.scheduleStatus !== 'ready') {
+    slotArea.replaceChildren(makeElement('p', state.scheduleStatus === 'error'
+      ? '일정을 다시 확인한 후 날짜를 선택해 주세요.' : '일정을 불러온 후 날짜를 선택해 주세요.', 'fc-empty'));
+    return;
+  }
   const focusedSlot = document.activeElement?.dataset.slotId;
   const slots = state.slots.filter((slot) => slot.start.startsWith(state.selectedDay ?? '!'));
   if (!state.selectedDay) { slotArea.replaceChildren(makeElement('p', '신청 가능한 날짜를 선택해 주세요.', 'fc-empty')); return; }
@@ -102,12 +116,17 @@ function renderPrice() {
   document.querySelector('#booking-price').textContent = count === 1 ? '35,000원' : count === 2 ? '65,000원' : '상담 후 안내';
 }
 async function refresh() {
-  if (state.submitting || state.completed || state.pendingValues) return;
+  if (state.scheduleStatus === 'loading' || state.submitting || state.completed || state.pendingValues) return;
   const number = ++state.requestNumber;
+  state.scheduleStatus = 'loading';
+  submitButton.disabled = true;
+  message.textContent = '';
+  renderCalendar(); renderSlots();
   try {
     const result = await loadSlots(state.month);
     if (number !== state.requestNumber || state.submitting || state.completed) return;
     state.slots = result.slots.filter(isUpcoming);
+    state.scheduleStatus = 'ready';
     submitButton.disabled = !state.slots.some((slot) => slot.isAvailable);
     const selected = state.slots.find((slot) => slot.id === state.selectedSlot?.id);
     if (state.selectedSlot && !selected?.isAvailable) {
@@ -118,21 +137,22 @@ async function refresh() {
     renderCalendar(); renderSlots();
   } catch (error) {
     if (number !== state.requestNumber || state.submitting || state.completed) return;
-    state.slots = []; clearSelection(); renderCalendar(); renderSlots();
+    state.scheduleStatus = 'error';
+    state.slots = []; state.selectedDay = null; clearSelection(); renderCalendar(); renderSlots();
     submitButton.disabled = true;
     message.textContent = `${error.message} 아래에서 일정을 다시 확인할 수 있어요.`;
   }
 }
 function shiftMonth(amount) {
-  if (state.submitting || state.completed || state.pendingValues) return;
+  if (state.scheduleStatus === 'loading' || state.submitting || state.completed || state.pendingValues) return;
   const [year, month] = state.month.split('-').map(Number);
   const next = new Date(Date.UTC(year, month - 1 + amount, 1));
   state.month = next.toISOString().slice(0, 7);
-  state.selectedDay = null; state.slots = []; submitButton.disabled = true; clearSelection(); renderCalendar(); renderSlots(); refresh();
+  state.selectedDay = null; state.slots = []; clearSelection(); refresh();
 }
 form.addEventListener('submit', async (event) => {
   event.preventDefault(); showError(errorNode, '');
-  if (state.submitting || state.completed) return;
+  if (state.scheduleStatus !== 'ready' || state.submitting || state.completed) return;
   if (!state.pendingValues && state.selectedSlot && !isUpcoming(state.selectedSlot)) { expireSlots(); return; }
   if (!state.selectedSlot) { showError(errorNode, '날짜와 시간을 먼저 선택해 주세요.'); document.querySelector('#calendar-month').scrollIntoView(); return; }
   if (!state.pendingValues && !form.reportValidity()) return;
@@ -186,4 +206,4 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) { ex
 // This only updates the page; Google is still queried at the existing interval.
 setInterval(() => { if (!document.hidden) expireSlots(); }, 1000);
 setInterval(() => { if (!document.hidden && !state.selectedSlot) refresh(); }, 60000);
-renderCalendar(); refresh();
+refresh();

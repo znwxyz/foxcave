@@ -5,3 +5,21 @@
 .fc-booking-confirmation-actions .fc-button { max-width: 100%; }
 .fc-booking-confirmation #receipt-number { overflow-wrap: anywhere; }
 .fc-booking-layout .fc-submit:disabled { opacity: .6; }
+.fc-calendar-stage { position: relative; }
+.fc-calendar-grid:empty { min-height: 321px; }
+.fc-calendar-stage:not([data-state=ready]) .fc-calendar-grid { opacity: .26; pointer-events: none; }
+.fc-calendar-stage:not([data-state=ready]) .fc-weekdays { opacity: .55; }
+.fc-calendar-stage:not([data-state=ready]) + .fc-calendar-legend { visibility: hidden; }
+.fc-calendar-day small { min-height: 15px; }
+.fc-calendar-notice { position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%); padding: 24px 14px; background: #f6f2ec; border-block: 1px solid #d9cbbd; color: #60412c; text-align: center; }
+.fc-calendar-notice-title { display: flex; align-items: center; justify-content: center; gap: 11px; font-size: 16px; font-weight: 400; line-height: 1.65; letter-spacing: -.045em; }
+.fc-calendar-notice p { margin-top: 6px; font-size: 11px; color: #807363; line-height: 1.8; }
+.fc-calendar-spinner { width: 18px; height: 18px; flex: 0 0 18px; border: 2px solid #ddcfc0; border-top-color: #785135; border-radius: 50%; animation: fc-calendar-spin 1s linear infinite; }
+.fc-calendar-head .fc-icon-button:disabled, #calendar-retry:disabled { opacity: .35; cursor: not-allowed; }
+@keyframes fc-calendar-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .fc-calendar-spinner { animation: none; } }
+@media (max-width: 600px) {
+  .fc-calendar-notice { padding: 22px 8px; }
+  .fc-calendar-notice-title { font-size: 14px; gap: 8px; }
+  .fc-calendar-notice p { font-size: 10px; }
+}
