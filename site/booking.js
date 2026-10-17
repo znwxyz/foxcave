@@ -1,11 +1,14 @@
-import { api, dateLabel, currentMonth, makeElement, formValue, showError } from './common.js';
+import { dateLabel, currentMonth, makeElement, formValue, showError } from './common.js';
+import { loadSlots, submitBooking } from './booking-service.js?v=20261017';
 
 const form = document.querySelector('#booking-form');
 const grid = document.querySelector('#calendar-grid');
 const slotArea = document.querySelector('#day-slots');
 const message = document.querySelector('#calendar-message');
 const errorNode = document.querySelector('#form-error');
-const state = { month: currentMonth(), slots: [], selectedDay: null, selectedSlot: null, requestNumber: 0 };
+const state = { month: currentMonth(), slots: [], selectedDay: null, selectedSlot: null, requestNumber: 0, submitting: false, completed: false, pendingValues: null };
+const submitButton = form.querySelector('[type=submit]');
+submitButton.disabled = true;
 function clearSelection() {
   state.selectedSlot = null;
   form.elements.slotId.value = '';
@@ -23,6 +26,7 @@ function dayButton(date, number) {
   button.dataset.date = date;
   button.append(makeElement('small', available ? '신청 가능' : slots.length ? '마감' : '—'));
   button.addEventListener('click', () => {
+    if (state.submitting || state.completed || state.pendingValues) return;
     if (state.selectedDay !== date) clearSelection();
     state.selectedDay = date; renderCalendar(); renderSlots();
   });
@@ -41,6 +45,7 @@ function renderCalendar() {
   if (focusedDate) grid.querySelector(`[data-date="${focusedDate}"]`)?.focus({ preventScroll: true });
 }
 function selectSlot(slot) {
+  if (state.submitting || state.completed || state.pendingValues) return;
   state.selectedSlot = slot;
   form.elements.slotId.value = slot.id;
   const options = Array.from({ length: slot.maxParty }, (_, index) => {
@@ -76,40 +81,79 @@ function renderPrice() {
   document.querySelector('#booking-price').textContent = count === 1 ? '35,000원' : count === 2 ? '65,000원' : '상담 후 안내';
 }
 async function refresh() {
+  if (state.submitting || state.completed || state.pendingValues) return;
   const number = ++state.requestNumber;
   try {
-    const result = await api(`/api/slots?month=${state.month}`);
-    if (number !== state.requestNumber) return;
+    const result = await loadSlots(state.month);
+    if (number !== state.requestNumber || state.submitting || state.completed) return;
     state.slots = result.slots;
+    submitButton.disabled = !state.slots.some((slot) => slot.isAvailable);
     const selected = state.slots.find((slot) => slot.id === state.selectedSlot?.id);
     if (state.selectedSlot && !selected?.isAvailable) {
       clearSelection(); showError(errorNode, '선택한 일정의 접수 상태가 바뀌었어요. 다른 일정을 선택해 주세요.');
     }
     const time = new Intl.DateTimeFormat('ko-KR', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Seoul' }).format(new Date(result.updatedAt));
-    message.textContent = state.slots.some((slot) => slot.isAvailable) ? `${time} 확인 · 15초마다 일정을 새로 확인합니다.` : '이번 달에 열린 일정이 없어요. 다음 달을 보거나 희망 날짜를 문의해 주세요.';
+    message.textContent = state.slots.some((slot) => slot.isAvailable) ? `${time} 확인 · 신청 후 확인 연락을 받아야 예약이 확정됩니다.` : '이번 달에 열린 일정이 없어요. 다음 달을 보거나 희망 날짜를 문의해 주세요.';
     renderCalendar(); renderSlots();
   } catch (error) {
-    if (number !== state.requestNumber) return;
+    if (number !== state.requestNumber || state.submitting || state.completed) return;
     state.slots = []; clearSelection(); renderCalendar(); renderSlots();
+    submitButton.disabled = true;
     message.textContent = `${error.message} 아래에서 일정을 다시 확인할 수 있어요.`;
   }
 }
 function shiftMonth(amount) {
+  if (state.submitting || state.completed || state.pendingValues) return;
   const [year, month] = state.month.split('-').map(Number);
   const next = new Date(Date.UTC(year, month - 1 + amount, 1));
   state.month = next.toISOString().slice(0, 7);
-  state.selectedDay = null; state.slots = []; clearSelection(); renderCalendar(); renderSlots(); refresh();
+  state.selectedDay = null; state.slots = []; submitButton.disabled = true; clearSelection(); renderCalendar(); renderSlots(); refresh();
 }
 form.addEventListener('submit', async (event) => {
   event.preventDefault(); showError(errorNode, '');
+  if (state.submitting || state.completed) return;
   if (!state.selectedSlot) { showError(errorNode, '날짜와 시간을 먼저 선택해 주세요.'); document.querySelector('#calendar-month').scrollIntoView(); return; }
-  if (!form.reportValidity()) return;
-  const button = form.querySelector('[type=submit]'); button.disabled = true; button.textContent = '신청 내용을 접수하고 있어요';
+  if (!state.pendingValues && !form.reportValidity()) return;
+  const values = state.pendingValues || formValue(form);
+  values.name = values.name.trim();
+  values.phone = values.phone.replace(/[\s-]/g, '');
+  values.message = values.message.trim();
+  if (!values.name) { showError(errorNode, '이름을 입력해 주세요.'); form.elements.name.focus(); return; }
+  if (!/^01[016789]\d{7,8}$/.test(values.phone)) { showError(errorNode, '휴대폰 번호를 확인해 주세요.'); form.elements.phone.focus(); return; }
+  state.submitting = true;
+  state.requestNumber++;
+  const fields = [...form.querySelectorAll('input, select, textarea, button')];
+  fields.forEach((field) => { field.disabled = true; });
+  form.setAttribute('aria-busy', 'true');
+  submitButton.textContent = '신청 내용을 접수하고 있어요';
   try {
-    const result = await api('/api/requests', { method: 'POST', body: JSON.stringify(formValue(form)) });
-    location.href = `/booking/status/#${result.token}`;
+    const receipt = await submitBooking(values);
+    state.completed = true;
+    const bookedStart = Date.parse(receipt.start);
+    const bookedEnd = bookedStart + receipt.duration * 60000;
+    state.slots = state.slots.map((slot) => {
+      const start = Date.parse(slot.start);
+      return start < bookedEnd && bookedStart < start + slot.duration * 60000 ? { ...slot, isAvailable: false } : slot;
+    });
+    renderCalendar(); renderSlots();
+    message.textContent = '신청하신 시간대는 접수가 마감되었습니다. 확인 연락 후 예약이 확정됩니다.';
+    const confirmation = document.querySelector('#booking-confirmation');
+    document.querySelector('#receipt-details').textContent = `${dateLabel(receipt.start)} · ${receipt.duration}분 · ${receipt.party}명`;
+    document.querySelector('#receipt-number').textContent = receipt.id;
+    form.hidden = true;
+    confirmation.hidden = false;
+    confirmation.focus();
+    confirmation.scrollIntoView({ behavior: 'smooth', block: 'center' });
   } catch (error) {
-    showError(errorNode, error.message); await refresh(); button.disabled = false; button.textContent = '예약 신청하기 ▸';
+    showError(errorNode, error.message);
+    // Keep the exact selection after an uncertain response so retries use the same ID.
+    state.pendingValues = error.uncertain ? values : null;
+    fields.forEach((field) => { field.disabled = Boolean(state.pendingValues); });
+    submitButton.disabled = false;
+    submitButton.textContent = state.pendingValues ? '같은 신청 다시 확인하기 ▸' : '예약 신청하기 ▸';
+  } finally {
+    state.submitting = false;
+    form.removeAttribute('aria-busy');
   }
 });
 document.querySelector('#month-prev').addEventListener('click', () => shiftMonth(-1));
@@ -117,5 +161,5 @@ document.querySelector('#month-next').addEventListener('click', () => shiftMonth
 document.querySelector('#calendar-retry').addEventListener('click', refresh);
 form.elements.party.addEventListener('change', renderPrice);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
-setInterval(() => { if (!document.hidden) refresh(); }, 15000);
+setInterval(() => { if (!document.hidden && !state.selectedSlot) refresh(); }, 60000);
 renderCalendar(); refresh();
