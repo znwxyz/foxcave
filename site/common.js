@@ -33,7 +33,7 @@ const menuButton = document.querySelector('.fc-menu-toggle');
 menuButton?.addEventListener('click', () => {
   const isOpen = menuButton.getAttribute('aria-expanded') === 'true';
   menuButton.setAttribute('aria-expanded', String(!isOpen));
-  menuButton.innerHTML = `${isOpen ? '메뉴 열기' : '메뉴 닫기'} <span aria-hidden="true">${isOpen ? '＋' : '−'}</span>`;
+  menuButton.setAttribute('aria-label', isOpen ? '메뉴 열기' : '메뉴 닫기');
   document.querySelector('.fc-nav').classList.toggle('is-open', !isOpen);
 });
 document.addEventListener('keydown', (event) => {

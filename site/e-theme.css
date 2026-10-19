@@ -76,3 +76,21 @@ body.fc-site { font-size:14px; line-height:1.9; }
   .fc-brand img { width:116px; height:27px; }
   .fc-book-link { padding-inline:6px; gap:6px; }
 }
+
+/* 모바일 메뉴: 햄버거 버튼, 열린 메뉴 오른쪽 아래에 클래스 예약 */
+.fc-burger { display:inline-flex; flex-direction:column; justify-content:space-between; width:24px; height:16px; }
+.fc-burger i { display:block; height:2px; width:100%; background:var(--fc-ink); border-radius:1px; transition:transform .2s, opacity .2s; }
+.fc-menu-toggle[aria-expanded="true"] .fc-burger i:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+.fc-menu-toggle[aria-expanded="true"] .fc-burger i:nth-child(2) { opacity:0; }
+.fc-menu-toggle[aria-expanded="true"] .fc-burger i:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+@media (max-width: 900px) {
+  .fc-menu-toggle { padding:12px 2px; }
+  .fc-header .fc-book-link { display:none; }
+  .fc-header .fc-nav.is-open { flex-direction:column; align-items:flex-start; gap:0; padding:4px 0 18px; }
+  .fc-header .fc-nav.is-open a { padding:11px 0; font-size:14px; }
+  .fc-header .fc-nav.is-open a::after { bottom:6px; }
+  .fc-header .fc-nav.is-open ~ .fc-book-link { display:flex; position:absolute; right:0; bottom:20px; margin:0; font-size:12px; padding:11px 16px; }
+}
+
+/* 플로팅 문의 패널: 안내 문구 없이 링크 세 개만 */
+.fc-chat-panel .fc-chat-link:first-child { border-top:0; }

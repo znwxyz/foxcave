@@ -1,4 +1,4 @@
-import { api, configuration, dateLabel, currentMonth, makeElement, showError } from './common.js?v=20261017b';
+import { api, configuration, dateLabel, currentMonth, makeElement, showError } from './common.js?v=20261019c';
 
 const loginForm = document.querySelector('#admin-login');
 const workspace = document.querySelector('#admin-workspace');

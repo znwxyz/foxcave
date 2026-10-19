@@ -1,4 +1,4 @@
-import { dateLabel, currentMonth, makeElement, formValue, showError } from './common.js?v=20261017b';
+import { dateLabel, currentMonth, makeElement, formValue, showError } from './common.js?v=20261019c';
 import { loadSlots, submitBooking } from './booking-service.js?v=20261017';
 
 const form = document.querySelector('#booking-form');
