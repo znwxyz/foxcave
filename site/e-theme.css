@@ -94,3 +94,9 @@ body.fc-site { font-size:14px; line-height:1.9; }
 
 /* 플로팅 문의 패널: 안내 문구 없이 링크 세 개만 */
 .fc-chat-panel .fc-chat-link:first-child { border-top:0; }
+
+/* 모바일 메뉴를 열어도 로고와 닫기 버튼 위치가 움직이지 않도록 첫 줄 높이 고정 */
+@media (max-width: 900px) {
+  .fc-header .fc-nav-wrap { align-content:flex-start; }
+  .fc-header .fc-brand, .fc-header .fc-menu-toggle { min-height:inherit; }
+}
