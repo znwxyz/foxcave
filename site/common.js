@@ -51,7 +51,6 @@ search?.addEventListener('input', () => {
   document.querySelectorAll('[data-faq-group]').forEach((group) => {
     group.hidden = !group.querySelector('[data-faq-item]:not([hidden])');
   });
-  document.querySelector('#faq-count').textContent = `${count}개의 답변`;
   document.querySelector('#faq-empty').hidden = count > 0;
 });
 const chatToggle = document.querySelector('.fc-chat-toggle');

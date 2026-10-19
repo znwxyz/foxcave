@@ -293,3 +293,22 @@
 .fc-lecture-terms dt { color: var(--fc-accent); font-weight: 500; }
 .fc-lecture-terms dd { margin: 0; }
 @media (min-width: 761px) { .fc-lecture-terms dl { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* 자주 묻는 질문 모바일: 질문 목록을 먼저 보여 주고, 검색과 분류, 문의는 아래로 */
+@media (max-width: 900px) {
+  .fc-faq-layout { display: flex; flex-direction: column; gap: 28px; }
+  .fc-faq-layout aside { order: 2; padding: 22px 20px; }
+  .fc-faq-layout > div, .fc-faq-layout aside { width: 100%; align-self: stretch; }
+  .fc-faq-layout aside .fc-faq-jump { margin: 14px 0 12px; }
+  .fc-faq-layout aside .fc-button { width: 100%; justify-content: space-between; }
+  .fc-faq-layout .fc-faq-item summary { min-height: 0; padding: 16px 18px; gap: 12px; font-size: 14px; line-height: 1.6; }
+  .fc-faq-layout .fc-faq-item summary small { display: none; }
+  .fc-faq-layout .fc-faq-item > p { padding: 0 18px 18px; font-size: 13px; line-height: 1.85; }
+  .fc-faq-group h2 { font-size: 20px; }
+}
+
+/* 단체 강의 협의 항목: 모바일에서 항목명 칸을 좁혀 설명이 한 줄에 들어가도록 */
+@media (max-width: 600px) {
+  .fc-lecture-terms { padding: 28px 20px; }
+  .fc-lecture-terms dl div { grid-template-columns: 58px 1fr; gap: 10px; }
+}
