@@ -312,3 +312,16 @@
   .fc-lecture-terms { padding: 28px 20px; }
   .fc-lecture-terms dl div { grid-template-columns: 58px 1fr; gap: 10px; }
 }
+
+/* 예상 수업료: 다른 입력 칸과 같은 네모 상자 */
+.fc-booking-layout .fc-price { display:block; padding:0; align-self:auto; }
+.fc-booking-layout .fc-price span { display:block; font-size:12px; line-height:1.8; color:var(--fc-ink); }
+.fc-booking-layout .fc-price strong { display:flex; align-items:center; box-sizing:border-box; height:48px; margin-top:9px; padding:0 12px; border:1px solid var(--fc-line); background:#fcfbf9; font-size:13px; font-weight:400; letter-spacing:0; line-height:1; color:var(--fc-ink); }
+
+/* 원하는 날짜가 없을 때: 문의와 전화 버튼을 같은 상자 디자인으로 나란히 */
+.fc-booking-note-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+.fc-booking-note-actions .fc-button { flex:0 0 auto; gap:24px; }
+@media (max-width: 600px) { .fc-booking-note-actions .fc-button { flex:1 1 0; justify-content:space-between; } }
+
+/* 단체 강의 문의: 진행 절차 없이 폼만 한 단으로 */
+.fc-inquiry-layout.fc-inquiry-solo { display:block; }
