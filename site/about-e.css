@@ -94,3 +94,19 @@
   .fc-about-address { grid-template-columns:1fr; gap:22px; margin-top:24px; }
   .fc-about-address dd { font-size:12px; }
 }
+
+/* 대표 소개: 흰 그림 위에 흰 상자가 겹치지 않도록 상자 없이 배치 */
+.fc-about-owner .fc-about-story-copy { background:none; margin:0; padding:38px 24px 38px 48px; }
+@media (max-width: 900px) {
+  .fc-about-owner .fc-about-story-copy { margin:0; padding:24px 20px 0; }
+}
+
+/* 여우굴의 공간: 자동으로 흐르는 캐러셀 (3~4장이 보이도록) */
+.fc-space-marquee { overflow:hidden; margin-top:28px; }
+.fc-space-track { display:flex; gap:16px; width:max-content; margin:0; padding:0; list-style:none; animation:fc-space-scroll 48s linear infinite; }
+.fc-space-marquee:hover .fc-space-track, .fc-space-marquee:focus-within .fc-space-track { animation-play-state:paused; }
+.fc-space-item { flex:0 0 auto; width:clamp(240px, 30vw, 360px); }
+.fc-space-item img { display:block; width:100%; height:auto; aspect-ratio:3/2; object-fit:cover; }
+@keyframes fc-space-scroll { from { transform:translateX(0); } to { transform:translateX(calc(-50% - 8px)); } }
+@media (max-width: 600px) { .fc-space-item { width:72vw; } .fc-space-track { gap:12px; } }
+@media (prefers-reduced-motion: reduce) { .fc-space-track { animation:none; } .fc-space-marquee { overflow-x:auto; } }
