@@ -23,6 +23,7 @@ function reset(nextMode = 'normal', missing = false) {
   else { env.addSlot(date, '19:30'); env.addSlot(date, '14:00'); }
   mode = nextMode; missingConfig = missing; requests = []; results.clear();
   if (mode === 'mail-fail') env.mailFails = true;
+  if (mode === 'old-deployment') env.book.sheets.delete('단체 강의·일반 문의');
 }
 reset();
 const readBody = async (req) => { let value = ''; for await (const chunk of req) { value += chunk; if (value.length > 30000) throw new Error('Too large'); } return value; };
@@ -54,7 +55,7 @@ const siteServer = http.createServer(async (req, res) => {
       const options = JSON.parse(await readBody(req)); reset(options.mode, options.missingConfig); json(res, { ok: true }); return;
     }
     if (url.pathname === '/__test/mode' && req.method === 'POST') { mode = JSON.parse(await readBody(req)).mode; json(res, { ok: true }); return; }
-    if (url.pathname === '/__test/state') { json(res, { rows: env.requests(), mails: env.mail, requests, slots: env.get({ action: 'slots', month: testMonth }) }); return; }
+    if (url.pathname === '/__test/state') { json(res, { rows: env.requests(), inquiries: env.inquiries(), mails: env.mail, requests, slots: env.get({ action: 'slots', month: testMonth }) }); return; }
     if (url.pathname === '/site/booking-config.json') { json(res, { webAppUrl: missingConfig ? '' : 'http://127.0.0.1:4174/exec' }); return; }
     let target = path.resolve(root, '.' + decodeURIComponent(url.pathname));
     if (!target.startsWith(root)) { res.writeHead(403); res.end(); return; }

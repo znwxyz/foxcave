@@ -1,7 +1,9 @@
 // Public deployment URL only. Email recipients and credentials stay in Apps Script.
 let configuration;
 let lastAttempt;
+let lastInquiryAttempt;
 const ATTEMPT_KEY = 'foxcave-booking-attempt-v1';
+const INQUIRY_ATTEMPT_KEY = 'foxcave-inquiry-attempt-v1';
 const CONNECTION_ERROR = '접수 결과를 확인하지 못했어요. 이미 접수되었을 수 있으니 입력 내용을 그대로 두고 다시 신청해 주세요. 같은 신청은 중복 접수되지 않습니다.';
 function uncertainError() { const error = new Error(CONNECTION_ERROR); error.uncertain = true; return error; }
 
@@ -78,5 +80,28 @@ export async function submitBooking(values) {
   if (result.receipt?.id !== lastAttempt.id || result.receipt?.status !== 'received'
     || !Number.isFinite(Date.parse(result.receipt.start)) || !Number.isInteger(result.receipt.party)
     || !Number.isInteger(result.receipt.duration)) throw uncertainError();
+  return result.receipt;
+}
+
+export async function checkInquiryService() {
+  const result = await request('health');
+  if (!Array.isArray(result.capabilities) || !result.capabilities.includes('inquiry')) {
+    throw new Error('온라인 문의를 준비하고 있어요. 카카오톡이나 전화로 문의해 주세요.');
+  }
+}
+
+export async function submitInquiry(values) {
+  const digest = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(values)))))
+    .map((byte) => byte.toString(16).padStart(2, '0')).join('');
+  if (!lastInquiryAttempt) {
+    try { lastInquiryAttempt = JSON.parse(sessionStorage.getItem(INQUIRY_ATTEMPT_KEY)); } catch { /* Storage may be disabled. */ }
+  }
+  if (lastInquiryAttempt?.digest !== digest || !/^[0-9a-f-]{36}$/.test(lastInquiryAttempt?.id || '')) {
+    lastInquiryAttempt = { digest, id: crypto.randomUUID() };
+    try { sessionStorage.setItem(INQUIRY_ATTEMPT_KEY, JSON.stringify(lastInquiryAttempt)); } catch { /* In-memory retries still work. */ }
+  }
+  const result = await request('inquiry', { ...values, requestId: lastInquiryAttempt.id });
+  if (result.receipt?.id !== lastInquiryAttempt.id || result.receipt?.status !== 'received'
+    || result.receipt?.kind !== values.kind) throw uncertainError();
   return result.receipt;
 }

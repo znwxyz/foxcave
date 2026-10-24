@@ -1,5 +1,5 @@
 /**
- * 여우굴 클래스 예약 — Google Apps Script V8
+ * 여우굴 클래스 예약·단체 강의·일반 문의 — Google Apps Script V8
  * 1. Code.gs에 이 파일 전체 붙여넣기  2. setup 실행  3. 웹 앱 배포
  * 설치 순서: docs/google-apps-script-setup.md
  * 공개 API는 일정 조회와 접수만 제공합니다. 신청자 정보는 공개하지 않습니다.
@@ -13,6 +13,7 @@ const FC = Object.freeze({
   TIMEZONE: 'Asia/Seoul',
   REQUESTS: '예약 신청',
   SLOTS: '수업 일정',
+  INQUIRIES: '단체 강의·일반 문의',
   DAILY_LIMIT: 80,
   PHONE_DAILY_LIMIT: 3,
   MAX_MAIL_ATTEMPTS: 3,
@@ -23,9 +24,14 @@ const FC = Object.freeze({
   SCHEDULE_NOTE: '자동 일정은 일·월·화 19:00 / 19:30 / 20:00 / 20:30 시작, 각 90분·최대 5명·한 팀입니다. 같은 날짜·시작 시간의 수동 행이 우선합니다. 하루를 쉬려면 네 시간 모두 접수 열기를 해제하세요. 수동 행을 삭제하면 해당 시간의 자동 일정이 다시 적용됩니다.',
   HEADERS: ['접수번호', '접수일시', '수업일시', '소요시간 분', '인원', '이름', '휴대폰 번호', '유입 경로', '요청사항', '개인정보 동의', '예약 상태', '메일 상태', '메일 발송일시', '메일 시도 횟수', '최근 메일 시도', '메일 오류', '중복 확인값', '발송 모드', '알림 수신자'],
   SLOT_HEADERS: ['날짜 YYYY-MM-DD', '시작 시간 HH:mm', '소요시간 분', '최대 인원', '접수 열기'],
+  // Keep shared contact, status and notification columns aligned with HEADERS.
+  INQUIRY_HEADERS: ['접수번호', '접수일시', '문의 종류', '기관·모임 이름', '예상 참여 인원', '이름', '휴대폰 번호', '희망 날짜', '문의 내용', '개인정보 동의', '상담 상태', '메일 상태', '메일 발송일시', '메일 시도 횟수', '최근 메일 시도', '메일 오류', '중복 확인값', '발송 모드', '알림 수신자'],
 });
 const COL = Object.freeze({ ID: 0, CREATED: 1, START: 2, DURATION: 3, PARTY: 4, NAME: 5, PHONE: 6, CHANNEL: 7, MESSAGE: 8, CONSENT: 9, STATUS: 10, MAIL: 11, SENT: 12, ATTEMPTS: 13, LAST_ATTEMPT: 14, ERROR: 15, DIGEST: 16, MODE: 17, RECIPIENT: 18 });
 const CHANNELS = Object.freeze({ unknown: '선택 안 함', search: '검색·네이버 지도', instagram: '인스타그램', friend: '지인 소개', other: '기타' });
+const INQUIRY_KINDS = Object.freeze({ lecture: '단체 강의', question: '일반 문의' });
+const INQUIRY_COL = Object.freeze({ KIND: 2, ORGANIZATION: 3, DESIRED_DATE: 7 });
+const INQUIRY_STATUSES = ['접수', '상담 중', '상담 완료', '종료'];
 
 // 처음 한 번 실행합니다. 재실행해도 기존 신청과 일정을 지우지 않습니다.
 function setup() {
@@ -37,10 +43,17 @@ function setup() {
   book.setSpreadsheetTimeZone(FC.TIMEZONE);
   const requests = prepareSheet_(book, FC.REQUESTS, FC.HEADERS);
   const slots = prepareSheet_(book, FC.SLOTS, FC.SLOT_HEADERS);
+  const inquiries = prepareSheet_(book, FC.INQUIRIES, FC.INQUIRY_HEADERS);
   requests.getRange('G:G').setNumberFormat('@');
   slots.getRange('A:B').setNumberFormat('@');
   const statusRule = SpreadsheetApp.newDataValidation().requireValueInList(['접수 대기', '예약 확정', '취소', '진행 불가'], true).setAllowInvalid(false).build();
   requests.getRange('K2:K1000').setDataValidation(statusRule);
+  inquiries.getRange('G:H').setNumberFormat('@');
+  inquiries.getRange('K2:K1000').setDataValidation(SpreadsheetApp.newDataValidation()
+    .requireValueInList(INQUIRY_STATUSES, true).setAllowInvalid(false).build());
+  inquiries.getRange('K1').setNote('상담 상태를 변경해도 클래스 달력은 자동으로 닫히지 않습니다. 일정 확정 후 필요한 수업 일정을 직접 닫아 주세요.');
+  inquiries.getRange('L1').setNote('발송 완료는 MailApp 처리 성공입니다. 실제 수신 여부는 받은편지함을 확인하세요.');
+  inquiries.getRange('Q1').setNote('중복 접수 방지용입니다. A열과 Q:S열은 수정하지 마세요.');
   slots.getRange('E2:E1000').setDataValidation(SpreadsheetApp.newDataValidation().requireCheckbox().build());
   slots.getRange('A1').setNote(FC.SCHEDULE_NOTE);
   requests.getRange('L1').setNote('발송 완료는 MailApp의 발송 처리 성공입니다. 받은편지함 도착 여부는 수신 메일함에서 확인합니다.');
@@ -50,7 +63,7 @@ function setup() {
   }
   // 메일 권한을 첫 설치에서 함께 승인받습니다. 메일은 보내지 않습니다.
   MailApp.getRemainingDailyQuota();
-  console.log('설정 완료. 시트: ' + book.getUrl() + '\n현재 모드: ' + delivery_().mode + '\n수업 일정 탭에 일정을 등록하세요.');
+  console.log('설정 완료. 시트: ' + book.getUrl() + '\n현재 모드: ' + delivery_().mode + '\n예약 신청·수업 일정·단체 강의·일반 문의 탭 준비 완료. 기존 신청·일정·수신자 설정은 유지됩니다.');
 }
 
 // 정식 도메인에서도 실제 시트 저장 + 리플레잇 단독 수신으로 점검합니다.
@@ -101,8 +114,8 @@ function doGet(event) {
   try {
     const params = event && event.parameter || {};
     if (params.action === 'health') {
-      book_();
-      return json_({ ok: true, mode: delivery_().mode });
+      const book = book_();
+      return json_({ ok: true, mode: delivery_().mode, capabilities: book.getSheetByName(FC.INQUIRIES) ? ['booking', 'inquiry'] : ['booking'] });
     }
     if (params.action !== 'slots') fail_('BAD_ACTION', '지원하지 않는 요청입니다.');
     if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(params.month || '')) fail_('BAD_MONTH', '조회할 달을 확인해 주세요.');
@@ -123,13 +136,14 @@ function doPost(event) {
     if (typeof raw !== 'string' || raw.length > 16000) fail_('BAD_BODY', '신청 내용을 확인해 주세요.');
     let input;
     try { input = JSON.parse(raw); } catch (_) { fail_('BAD_BODY', '신청 내용을 확인해 주세요.'); }
-    if (!input || input.action !== 'submit' || input.version !== FC.VERSION) fail_('BAD_ACTION', '예약 페이지를 새로 열어 주세요.');
+    if (!input || ['submit', 'inquiry'].indexOf(input.action) < 0 || input.version !== FC.VERSION) fail_('BAD_ACTION', '접수 페이지를 새로 열어 주세요.');
     const delivery = delivery_();
     // origin is a guardrail, not authentication; rate limits and validation are also enforced.
     const local = delivery.mode === 'TEST' && /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(input.origin || '');
     if (!local && FC.ORIGINS.indexOf(input.origin) < 0) fail_('BAD_ORIGIN', '여우굴 홈페이지에서 신청해 주세요.');
-    const data = validate_(input);
-    return json_(withLock_(function () { return saveBooking_(data, delivery); }));
+    const inquiry = input.action === 'inquiry';
+    const data = inquiry ? validateInquiry_(input) : validate_(input);
+    return json_(withLock_(function () { return inquiry ? saveInquiry_(data, delivery) : saveBooking_(data, delivery); }));
   } catch (error) { return errorJson_(error); }
 }
 
@@ -145,10 +159,7 @@ function saveBooking_(data, delivery) {
     // Respond with the original receipt even if the slot has since closed.
     return { ok: true, receipt: receipt_(existing) };
   }
-  const today = date_(new Date(), 'yyyy-MM-dd');
-  const todayRows = rows.filter((row) => String(row[COL.CREATED]).startsWith(today));
-  if (todayRows.length >= FC.DAILY_LIMIT) fail_('DAILY_LIMIT', '오늘 온라인 접수가 많아 잠시 쉬고 있어요. 카카오톡이나 전화로 문의해 주세요.');
-  if (todayRows.filter((row) => row[COL.PHONE] === data.phone).length >= FC.PHONE_DAILY_LIMIT) fail_('PHONE_LIMIT', '같은 연락처의 신청이 여러 건 접수되었어요. 추가 신청이나 변경은 카카오톡으로 문의해 주세요.');
+  checkNewRequest_(book, data);
   const slot = readSlots_(book, data.slotId.slice(0, 7)).find((candidate) => candidate.id === data.slotId);
   if (!slot || !slot.isOpen || Date.parse(slot.start) <= Date.now() || isOccupied_(slot, occupiedPeriods_(rows))) fail_('SLOT_CLOSED', '선택한 일정의 접수가 마감되었어요. 다른 일정을 선택해 주세요.');
   if (data.party > slot.maxParty) fail_('PARTY_LIMIT', '선택한 일정의 최대 인원을 확인해 주세요.');
@@ -181,6 +192,67 @@ function validate_(input) {
   if (!/^\d{4}-(0[1-9]|1[0-2])-\d{2}T([01]\d|2[0-3]):[0-5]\d:00\+09:00$/.test(slotId)) fail_('BAD_SLOT', '날짜와 시간을 다시 선택해 주세요.');
   const message = text_(input.message, 2000, false);
   return { requestId: input.requestId.toLowerCase(), slotId: slotId, party: input.party, name: name, phone: phone, channel: input.channel, message: message, consent: true };
+}
+
+function validateInquiry_(input) {
+  if (typeof input.requestId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(input.requestId)) fail_('BAD_ID', '페이지를 새로 열고 다시 문의해 주세요.');
+  if (input.website) fail_('SPAM', '문의 내용을 확인해 주세요.');
+  if (input.consent !== true) fail_('CONSENT', '개인정보 수집·이용 동의가 필요합니다.');
+  if (!Object.prototype.hasOwnProperty.call(INQUIRY_KINDS, input.kind)) fail_('BAD_KIND', '문의 종류를 다시 선택해 주세요.');
+  const name = text_(input.name, 60, true);
+  const organization = text_(input.organization == null ? '' : input.organization, 100, false);
+  if (/[\r\n]/.test(name + organization)) fail_('BAD_NAME', '이름과 기관·모임 이름을 한 줄로 입력해 주세요.');
+  const phone = text_(input.phone, 20, true).replace(/[\s-]/g, '');
+  if (!/^01[016789]\d{7,8}$/.test(phone)) fail_('BAD_PHONE', '휴대폰 번호를 확인해 주세요.');
+  const party = input.party == null || input.party === '' ? null : input.party;
+  if ((party === null && input.kind === 'lecture') || (party !== null && (!Number.isInteger(party) || party < 1 || party > 200))) fail_('BAD_PARTY', '예상 참여 인원을 1~200명으로 입력해 주세요.');
+  const desiredDate = text_(input.desiredDate == null ? '' : input.desiredDate, 10, false);
+  if (desiredDate && (!/^\d{4}-\d{2}-\d{2}$/.test(desiredDate) || !Number.isFinite(Date.parse(desiredDate + 'T00:00:00+09:00'))
+    || date_(new Date(desiredDate + 'T00:00:00+09:00'), 'yyyy-MM-dd') !== desiredDate)) fail_('BAD_DATE', '희망 날짜를 확인해 주세요.');
+  return { requestId: input.requestId.toLowerCase(), kind: input.kind, organization: organization, name: name, phone: phone,
+    desiredDate: desiredDate, party: party, message: text_(input.message, 2000, true), consent: true };
+}
+
+function checkNewRequest_(book, data) {
+  const rows = [FC.REQUESTS, FC.INQUIRIES].reduce((all, name) => {
+    const sheet = book.getSheetByName(name);
+    return sheet ? all.concat(rows_(sheet, FC.HEADERS.length)) : all;
+  }, []);
+  if (rows.some((row) => row[COL.ID] === data.requestId)) fail_('ID_CONFLICT', '다른 접수에 사용된 번호입니다. 페이지를 새로 열어 주세요.');
+  const today = date_(new Date(), 'yyyy-MM-dd');
+  const todayRows = rows.filter((row) => String(row[COL.CREATED]).startsWith(today));
+  if (todayRows.length >= FC.DAILY_LIMIT) fail_('DAILY_LIMIT', '오늘 온라인 접수가 많아 잠시 쉬고 있어요. 카카오톡이나 전화로 문의해 주세요.');
+  if (todayRows.filter((row) => row[COL.PHONE] === data.phone).length >= FC.PHONE_DAILY_LIMIT) fail_('PHONE_LIMIT', '같은 연락처의 신청이 여러 건 접수되었어요. 추가 신청이나 변경은 카카오톡으로 문의해 주세요.');
+}
+
+function saveInquiry_(data, delivery) {
+  const book = book_();
+  const sheet = book.getSheetByName(FC.INQUIRIES);
+  if (!sheet) fail_('SETUP', '온라인 문의를 준비하고 있어요. 카카오톡이나 전화로 문의해 주세요.');
+  const rows = rows_(sheet, FC.INQUIRY_HEADERS.length);
+  const digest = digest_(JSON.stringify(data));
+  const existing = rows.find((row) => row[COL.ID] === data.requestId);
+  if (existing) {
+    if (existing[COL.DIGEST] !== digest) fail_('ID_CONFLICT', '이전 문의와 내용이 다릅니다. 페이지를 새로 열고 다시 문의해 주세요.');
+    return { ok: true, receipt: inquiryReceipt_(existing) };
+  }
+  checkNewRequest_(book, data);
+  // Check dates only for new requests so a lost response can be recovered later.
+  if (data.desiredDate && data.desiredDate < date_(new Date(), 'yyyy-MM-dd')) fail_('BAD_DATE', '희망 날짜는 오늘 이후로 선택해 주세요.');
+  const row = [data.requestId, date_(new Date(), 'yyyy-MM-dd HH:mm:ss'), INQUIRY_KINDS[data.kind], data.organization, data.party == null ? '' : data.party,
+    data.name, data.phone, data.desiredDate, data.message, '동의', '접수', '대기', '', 0, '', '', digest, delivery.mode, delivery.recipient];
+  const rowNumber = sheet.getLastRow() + 1;
+  if (rowNumber > sheet.getMaxRows()) sheet.insertRowsAfter(sheet.getMaxRows(), 500);
+  sheet.getRange(rowNumber, 1, 1, row.length).setNumberFormat('@').setValues([row.map(sheetText_)]);
+  sheet.getRange(rowNumber, COL.STATUS + 1).setDataValidation(SpreadsheetApp.newDataValidation()
+    .requireValueInList(INQUIRY_STATUSES, true).setAllowInvalid(false).build());
+  SpreadsheetApp.flush();
+  try { notifyRow_(sheet, rowNumber, row, book, true); } catch (_) { console.error('Inquiry notification state could not be updated; inspect the private sheet.'); }
+  return { ok: true, receipt: inquiryReceipt_(row) };
+}
+
+function inquiryReceipt_(row) {
+  return { id: row[COL.ID], status: 'received', kind: Object.keys(INQUIRY_KINDS).find((kind) => INQUIRY_KINDS[kind] === row[INQUIRY_COL.KIND]) };
 }
 
 function readSlots_(book, month) {
@@ -240,7 +312,7 @@ function isOccupied_(slot, occupied) {
   return occupied.some((period) => period.id === slot.id || start < period.end && period.start < end);
 }
 
-function notifyRow_(sheet, number, row, book) {
+function notifyRow_(sheet, number, row, book, inquiry) {
   if (['발송 완료', '확인 필요', '전송 중', '재시도 종료'].indexOf(row[COL.MAIL]) >= 0) return;
   const attempts = Number(row[COL.ATTEMPTS]) || 0;
   if (attempts >= FC.MAX_MAIL_ATTEMPTS) { setMail_(sheet, number, row, '재시도 종료', ''); return; }
@@ -254,7 +326,7 @@ function notifyRow_(sheet, number, row, book) {
   SpreadsheetApp.flush();
   const link = book.getUrl() + '#gid=' + sheet.getSheetId() + '&range=A' + number + ':S' + number;
   try {
-    MailApp.sendEmail(Object.assign({ to: row[COL.RECIPIENT], name: '여우굴 예약 알림' }, bookingEmail_(row, link)));
+    MailApp.sendEmail(Object.assign({ to: row[COL.RECIPIENT], name: inquiry ? '여우굴 문의 알림' : '여우굴 예약 알림' }, inquiry ? inquiryEmail_(row, link) : bookingEmail_(row, link)));
   } catch (_) {
     setMail_(sheet, number, row, attempts + 1 >= FC.MAX_MAIL_ATTEMPTS ? '재시도 종료' : '재시도 대기', '메일 발송 실패. 실행 내역과 발송 권한을 확인해 주세요.');
     return;
@@ -277,8 +349,23 @@ function bookingEmail_(row, link, preview) {
   const note = preview ? '메일 서식 확인용 가상 예시입니다. 신청 행은 생성하지 않았으며 예약 시간도 마감되지 않습니다.'
     : '현재 상태는 접수 대기입니다. 고객에게 확인 연락 후 시트의 예약 상태를 변경해 주세요.';
   const linkLabel = preview ? '예약 시트 확인' : '신청 행 확인';
+  const subject = preview ? '[여우굴 TEST] 이메일 연결 확인' : test + '[여우굴] 클래스 예약 신청 · ' + date_(new Date(row[COL.START]), 'MM-dd HH:mm') + ' · ' + row[COL.PARTY] + '명';
+  return notificationEmail_(title, subject, note, fields, link, linkLabel);
+}
+
+function inquiryEmail_(row, link) {
+  const test = row[COL.MODE] === 'TEST' ? '[TEST] ' : '';
+  const kind = row[INQUIRY_COL.KIND];
+  const fields = [['접수번호', row[COL.ID]], ['문의 종류', kind], ['기관·모임 이름', row[INQUIRY_COL.ORGANIZATION] || '미기재'],
+    ['이름', row[COL.NAME]], ['연락처', row[COL.PHONE]], ['희망 날짜', row[INQUIRY_COL.DESIRED_DATE] || '미정'],
+    ['예상 참여 인원', row[COL.PARTY] ? row[COL.PARTY] + '명' : '미정'], ['문의 내용', row[COL.MESSAGE]]];
+  return notificationEmail_(test + '여우굴 ' + kind + ' 접수', test + '[여우굴] ' + kind + ' 접수',
+    '문의가 접수되었습니다. 남겨주신 연락처로 상담 후 시트의 상담 상태를 변경해 주세요. 문의 접수만으로 예약이 확정되거나 클래스 일정이 마감되지는 않습니다.', fields, link, '문의 행 확인');
+}
+
+function notificationEmail_(title, subject, note, fields, link, linkLabel) {
   return {
-    subject: preview ? '[여우굴 TEST] 이메일 연결 확인' : test + '[여우굴] 클래스 예약 신청 · ' + date_(new Date(row[COL.START]), 'MM-dd HH:mm') + ' · ' + row[COL.PARTY] + '명',
+    subject: subject,
     body: [title, '', note, '', ...fields.map((field) => field[0] + ': ' + field[1]), '', linkLabel + ': ' + link].join('\n'),
     htmlBody: '<div lang="ko" style="font-family:Arial,sans-serif;font-size:15px;line-height:1.7;color:#292724;max-width:640px">'
       + '<h2 style="font-size:20px;margin:0 0 16px">' + html_(title) + '</h2>'
@@ -297,18 +384,20 @@ function html_(value) {
 function retryPendingNotifications() {
   withLock_(function () {
     const book = book_();
-    const sheet = book.getSheetByName(FC.REQUESTS);
-    const rows = rows_(sheet, FC.HEADERS.length);
     let processed = 0;
-    rows.forEach((row, index) => {
-      const age = Date.now() - Date.parse(row[COL.LAST_ATTEMPT] || '1970-01-01T00:00:00Z');
-      if (row[COL.MAIL] === '전송 중' && age > 15 * 60 * 1000) {
-        setMail_(sheet, index + 2, row, '확인 필요', '발송 중 실행이 중단되었습니다. 수신함 확인 후 처리하세요.');
-      }
-      if (processed < 10 && row[COL.ID] && ['대기', '재시도 대기'].indexOf(row[COL.MAIL]) >= 0 && age >= 10 * 60 * 1000) {
-        processed++;
-        notifyRow_(sheet, index + 2, row, book);
-      }
+    [FC.REQUESTS, FC.INQUIRIES].forEach((name) => {
+      const sheet = book.getSheetByName(name);
+      if (!sheet) return;
+      rows_(sheet, FC.HEADERS.length).forEach((row, index) => {
+        const age = Date.now() - Date.parse(row[COL.LAST_ATTEMPT] || '1970-01-01T00:00:00Z');
+        if (row[COL.MAIL] === '전송 중' && age > 15 * 60 * 1000) {
+          setMail_(sheet, index + 2, row, '확인 필요', '발송 중 실행이 중단되었습니다. 수신함 확인 후 처리하세요.');
+        }
+        if (processed < 10 && row[COL.ID] && ['대기', '재시도 대기'].indexOf(row[COL.MAIL]) >= 0 && age >= 10 * 60 * 1000) {
+          processed++;
+          notifyRow_(sheet, index + 2, row, book, name === FC.INQUIRIES);
+        }
+      });
     });
   });
 }

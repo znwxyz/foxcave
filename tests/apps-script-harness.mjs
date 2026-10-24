@@ -108,6 +108,7 @@ export function createHarness({ now = '2026-10-17T03:00:00Z' } = {}) {
   env.post = (input) => JSON.parse(context.doPost({ postData: { contents: JSON.stringify(input) } }).body);
   env.setup = () => context.setup();
   env.requests = () => env.book.getSheetByName('예약 신청').data.slice(1);
+  env.inquiries = () => env.book.getSheetByName('단체 강의·일반 문의')?.data.slice(1) || [];
   env.addSlot = (date = '2026-10-20', time = '19:30', maxParty = 2, isOpen = true) => {
     env.book.getSheetByName('수업 일정').data.push([date, time, 90, maxParty, isOpen]);
     return date + 'T' + time + ':00+09:00';
@@ -117,4 +118,10 @@ export function createHarness({ now = '2026-10-17T03:00:00Z' } = {}) {
 
 export function booking(overrides = {}) {
   return { version: 1, action: 'submit', requestId: randomUUID(), origin: 'http://127.0.0.1:4173', kind: 'class', slotId: '2026-10-20T19:30:00+09:00', party: 2, name: '테스트 신청', phone: '010-0000-0000', channel: 'search', message: '로컬 검증용 가상 데이터', consent: true, website: '', ...overrides };
+}
+
+export function inquiry(overrides = {}) {
+  return { version: 1, action: 'inquiry', requestId: randomUUID(), origin: 'http://127.0.0.1:4173', kind: 'lecture',
+    organization: '테스트 기관', name: '문의 테스트', phone: '010-0000-0000', desiredDate: '2026-11-08', party: 30,
+    message: '로컬 검증용 가상 문의입니다.', consent: true, website: '', ...overrides };
 }

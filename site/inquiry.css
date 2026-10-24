@@ -1,0 +1,8 @@
+.fc-inquiry-trap { position: absolute !important; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.fc-inquiry-confirmation { padding: 36px; background: var(--fc-white); }
+.fc-inquiry-confirmation h2 { margin-block: 20px; }
+.fc-inquiry-confirmation p { margin-block: 18px; font-size: 13px; }
+.fc-inquiry-confirmation #inquiry-receipt-number { overflow-wrap: anywhere; }
+.fc-inquiry-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.fc-inquiry-layout .fc-submit:disabled { opacity: .6; }
+@media (max-width: 600px) { .fc-inquiry-confirmation { padding: 25px 21px; } }
