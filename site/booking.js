@@ -104,7 +104,8 @@ function renderSlots() {
     button.setAttribute('aria-pressed', String(state.selectedSlot?.id === slot.id));
     button.disabled = !slot.isAvailable;
     const title = makeElement('span', `${slot.start.slice(11, 16)}~${endTime(slot)}`);
-    title.append(makeElement('small', `${slot.duration}분 · 최대 ${slot.maxParty}명 · 한 팀 진행`));
+    // Class capacity copy; selectable party size still follows the server's maxParty.
+    title.append(makeElement('small', `${slot.duration}분 · 최대 5명 · 한 팀 진행`));
     button.append(title, makeElement('span', slot.isAvailable ? '이 시간 선택' : '마감'));
     button.addEventListener('click', () => selectSlot(slot)); return button;
   });
